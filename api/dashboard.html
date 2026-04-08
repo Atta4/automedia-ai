@@ -1,0 +1,1857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoMedia AI</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--border:#2a2a38;--text:#e8e8f0;--muted:#6b6b80;--accent:#7c6af7;--success:#5dcaa5;--warn:#ef9f27;--danger:#e24b4a;--card:#13131c}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.shell{display:grid;grid-template-columns:210px 1fr;min-height:100vh}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:20px 0;display:flex;flex-direction:column}
+.logo{padding:0 18px 22px;font-size:15px;font-weight:600;letter-spacing:-0.3px}
+.logo span{color:var(--accent)}
+.nav{display:flex;align-items:center;gap:9px;padding:8px 18px;cursor:pointer;color:var(--muted);font-size:13px;border-left:2px solid transparent;transition:all .15s}
+.nav:hover{color:var(--text);background:var(--bg3)}
+.nav.on{color:var(--accent);border-left-color:var(--accent);background:rgba(124,106,247,.07)}
+.sfooter{margin-top:auto;padding:14px 18px;font-size:11px;color:var(--muted)}
+.adot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--danger);margin-right:5px;vertical-align:middle}
+.adot.ok{background:var(--success)}
+.main{overflow:auto}
+.ph{padding:20px 26px 0;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:14px}
+.ptitle{font-size:17px;font-weight:600;letter-spacing:-.3px}
+.ha{display:flex;gap:7px}
+.btn{padding:6px 13px;border-radius:7px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btp{background:var(--accent);border-color:var(--accent);color:#fff}
+.btp:hover{background:#6a58e0;border-color:#6a58e0;color:#fff}
+.btg{background:#3b6d11;border-color:#3b6d11;color:#fff}
+.btg:hover{background:#2d5409;color:#fff}
+.content{padding:22px 26px}
+.srow{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:22px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 15px}
+.slbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.sval{font-size:22px;font-weight:600;letter-spacing:-.5px}
+.ssub{font-size:10px;color:var(--muted);margin-top:1px}
+.cp{color:#9c8ff9}.cb{color:#378add}.ca{color:#ef9f27}.cg{color:#5dcaa5}.cr{color:#e24b4a}
+.pcard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:15px 18px;margin-bottom:16px}
+.psteps{display:flex;align-items:center}
+.pstep{flex:1;text-align:center;position:relative}
+.pstep::after{content:'';position:absolute;top:13px;right:-50%;width:100%;height:1px;background:var(--border)}
+.pstep:last-child::after{display:none}
+.pdot{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:var(--bg);margin:0 auto 5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;position:relative;z-index:1}
+.pdot.done{border-color:var(--success);background:rgba(93,202,165,.1);color:var(--success)}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.stitle{font-size:13px;font-weight:500}
+.tw{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{padding:9px 14px;text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:var(--bg2)}
+td{padding:9px 14px;border-bottom:1px solid rgba(42,42,56,.4);vertical-align:middle;font-size:12px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(124,106,247,.02)}
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:500}
+.bv{background:rgba(93,202,165,.12);color:#5dcaa5}.bs{background:rgba(124,106,247,.12);color:#9c8ff9}
+.ba{background:rgba(239,159,39,.12);color:#efb847}.bu{background:rgba(99,153,34,.12);color:#7ab830}
+.bf{background:rgba(226,75,74,.12);color:#e24b4a}.bd{background:rgba(107,107,128,.12);color:#8888a0}
+.spills{display:flex;gap:3px;flex-wrap:wrap}
+.spill{font-size:9px;padding:1px 5px;border-radius:3px;border:1px solid var(--border);color:var(--muted)}
+.ra{display:flex;gap:5px}
+
+/* ── Settings ── */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.scard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+.scard-title{font-size:13px;font-weight:500;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.field input,.field select,.field textarea{width:100%;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;font-family:inherit;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:70px;line-height:1.5}
+.field select{cursor:pointer}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+.toggle-row span{font-size:12px}
+.toggle{position:relative;width:36px;height:20px}
+.toggle input{opacity:0;width:0;height:0}
+.tslider{position:absolute;inset:0;background:var(--border);border-radius:10px;cursor:pointer;transition:.2s}
+.tslider:before{content:'';position:absolute;width:14px;height:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+input:checked+.tslider{background:var(--accent)}
+input:checked+.tslider:before{transform:translateX(16px)}
+
+/* Voice cards */
+.voice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.voice-card{padding:8px 10px;border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:all .15s}
+.voice-card:hover{border-color:var(--accent)}
+.voice-card.sel{border-color:var(--accent);background:rgba(124,106,247,.07)}
+.vc-name{font-size:11px;font-weight:500;margin-bottom:1px}
+.vc-desc{font-size:9px;color:var(--muted)}
+.vc-badge{font-size:8px;padding:1px 5px;border-radius:3px;background:rgba(124,106,247,.12);color:#9c8ff9;margin-top:3px;display:inline-block}
+
+/* Format selector */
+.fmt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fmt-card{padding:10px 12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s;text-align:center}
+.fmt-card:hover{border-color:var(--accent)}
+.fmt-card.sel{border-color:var(--accent);background:rgba(124,106,247,.07)}
+.fmt-icon{font-size:22px;margin-bottom:4px}
+.fmt-name{font-size:12px;font-weight:500}
+.fmt-dim{font-size:10px;color:var(--muted)}
+
+/* Keywords tags */
+.kw-list{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;min-height:32px}
+.kw-tag{font-size:11px;padding:3px 8px;background:rgba(124,106,247,.1);color:#9c8ff9;border-radius:4px;border:1px solid rgba(124,106,247,.2);display:flex;align-items:center;gap:4px}
+.kw-tag .x{cursor:pointer;opacity:.6;font-size:12px}
+.kw-tag .x:hover{opacity:1}
+.kw-input-row{display:flex;gap:6px}
+.kw-input-row input{flex:1;padding:6px 9px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;font-family:inherit}
+
+/* Region pills */
+.region-grid{display:flex;flex-wrap:wrap;gap:6px}
+.region-pill{padding:4px 12px;border:1px solid var(--border);border-radius:20px;cursor:pointer;font-size:11px;color:var(--muted);transition:all .15s}
+.region-pill:hover{border-color:var(--accent);color:var(--accent)}
+.region-pill.sel{border-color:var(--accent);background:rgba(124,106,247,.1);color:#9c8ff9}
+
+/* Post modal */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;overflow-y:auto;padding:20px}
+.overlay.open{display:block}
+.post-modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px;width:100%;max-width:800px;margin:0 auto}
+.pm-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.pm-title{font-size:15px;font-weight:600;line-height:1.4;flex:1}
+.pm-close{cursor:pointer;color:var(--muted);font-size:22px;line-height:1}
+.pm-meta{padding:12px 22px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pm-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.pm-left{padding:18px 22px;border-right:1px solid var(--border)}
+.pm-right{padding:18px 22px}
+.pm-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.copy-btn{font-size:10px;padding:3px 8px;border-radius:5px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);cursor:pointer;transition:all .15s;font-family:inherit}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.copy-btn.ok{border-color:var(--success);color:var(--success)}
+.seg{margin-bottom:10px;border-radius:7px;overflow:hidden;border:1px solid var(--border)}
+.seg-lbl{padding:4px 10px;font-size:9px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;background:var(--bg3);border-bottom:1px solid var(--border)}
+.seg-lbl.hook{color:#9c8ff9;border-left:3px solid #7c6af7}
+.seg-lbl.context{color:#5dcaa5;border-left:3px solid #1d9e75}
+.seg-lbl.evidence{color:#378add;border-left:3px solid #185fa5}
+.seg-lbl.analysis{color:#ef9f27;border-left:3px solid #ba7517}
+.seg-lbl.cta{color:#e24b4a;border-left:3px solid #a32d2d}
+.seg-txt{padding:9px 11px;font-size:12px;line-height:1.7;background:var(--card)}
+.seg-vis{padding:5px 11px;font-size:10px;color:var(--muted);background:var(--bg);border-top:1px solid var(--border);font-style:italic}
+.desc-box{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px;font-size:12px;line-height:1.7;max-height:100px;overflow-y:auto;margin-bottom:12px}
+.htags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.htag{font-size:11px;padding:2px 8px;background:rgba(124,106,247,.1);color:#9c8ff9;border-radius:4px;border:1px solid rgba(124,106,247,.2);cursor:pointer;transition:all .15s}
+.htag:hover{background:rgba(124,106,247,.2)}
+.htag.sel{background:var(--accent);color:#fff;border-color:var(--accent)}
+.src-link{display:block;font-size:11px;color:#378add;padding:3px 0;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.src-link:hover{color:#85b7eb}
+
+.log{background:#060610;border:1px solid var(--border);border-radius:7px;padding:10px;font-family:'SF Mono',monospace;font-size:11px;line-height:1.8;max-height:160px;overflow-y:auto;margin-top:10px}
+.li{color:var(--muted)}.ls{color:var(--success)}.le{color:var(--danger)}.lw{color:var(--warn)}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}
+.sopt{padding:9px 11px;border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:all .15s}
+.sopt:hover{border-color:var(--accent)}
+.sopt.sel{border-color:var(--accent);background:rgba(124,106,247,.07)}
+.sopt-n{font-size:12px;font-weight:500;margin-bottom:1px}
+.sopt-d{font-size:10px;color:var(--muted)}
+.empty{text-align:center;padding:36px;color:var(--muted)}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:13px}
+.vcard{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.vthumb{height:120px;background:var(--bg3);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;position:relative}
+.vdur{position:absolute;bottom:5px;right:7px;background:rgba(0,0,0,.7);padding:2px 5px;border-radius:3px;font-size:10px}
+.vinfo{padding:11px}.vtitle{font-size:12px;font-weight:500;margin-bottom:3px;line-height:1.3}.vmeta{font-size:10px;color:var(--muted)}
+.spin{display:inline-block;width:11px;height:11px;border:2px solid rgba(124,106,247,.3);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:5px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.notif{position:fixed;top:14px;right:14px;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:9px 14px;font-size:12px;z-index:300;opacity:0;transform:translateY(-6px);transition:all .2s;pointer-events:none}
+.notif.show{opacity:1;transform:translateY(0)}
+.notif.ok{border-color:rgba(93,202,165,.4);color:#5dcaa5}
+.notif.err{border-color:rgba(226,75,74,.4);color:#e24b4a}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@media(max-width:700px){.settings-grid{grid-template-columns:1fr}.pm-body{grid-template-columns:1fr}.pm-left{border-right:none;border-bottom:1px solid var(--border)}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="logo">Auto<span>Media</span> AI</div>
+  <div class="nav on" onclick="showTab('dashboard',this)">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+    Dashboard
+  </div>
+  <div class="nav" onclick="showTab('settings',this)">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"/></svg>
+    Settings
+  </div>
+  <div class="nav" onclick="showTab('topics',this)">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+    Topics
+  </div>
+  <div class="nav" onclick="showTab('posts',this)">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6h6M5 9h4"/></svg>
+    Posts
+  </div>
+  <div class="nav" onclick="showTab('videos',this)">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="10" height="10" rx="1.5"/><path d="M15 5.5l-4 2.5 4 2.5V5.5z"/></svg>
+    Videos
+  </div>
+  <div class="nav" onclick="showTab('youtube',this)">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M15.5 8c0-1.3-.1-2.3-.3-3.1-.2-.9-.6-1.6-1.3-2.2-.7-.7-1.4-1.1-2.2-1.3C10.9 1.2 9.9 1 8.6 1H7.4C6.1 1 5.1 1.2 4.3 1.4 3.5 1.6 2.8 2 2.1 2.7 1.4 3.3 1 4 1 4.9 1 5.7 1 6.7 1 8s0 2.3.3 3.1c.2.9.6 1.6 1.3 2.2.7.7 1.4 1.1 2.2 1.3.8.2 1.8.3 3.1.3h1.2c1.3 0 2.3-.1 3.1-.3.9-.2 1.6-.6 2.2-1.3.7-.7 1.1-1.4 1.3-2.2.2-.8.3-1.8.3-3.1zM6.5 10.5V5.5l5 2.5-5 2.5z"/></svg>
+    YouTube
+  </div>
+  <div class="nav" onclick="showTab('run',this)">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M3 3l10 5-10 5V3z"/></svg>
+    Run Pipeline
+  </div>
+  <div class="nav" onclick="showTab('content-to-video',this)">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3H5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2V9"/><path d="M9 3l6 6M9 3L3 9"/></svg>
+    Content to Video
+  </div>
+  <div class="sfooter">
+    <div><span class="adot" id="adot"></span><span id="albl">Connecting...</span></div>
+    <div style="margin-top:3px">localhost:8000</div>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- DASHBOARD -->
+<div id="t-dashboard">
+  <div class="ph">
+    <div class="ptitle">Dashboard</div>
+    <div class="ha">
+      <button class="btn" onclick="refreshAll()">Refresh</button>
+      <button class="btn btp" onclick="triggerCollection()">+ Collect Topics</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="srow">
+      <div class="sc"><div class="slbl">Total</div><div class="sval cp" id="s0">—</div><div class="ssub">topics</div></div>
+      <div class="sc"><div class="slbl">Validated</div><div class="sval cb" id="s1">—</div><div class="ssub">ready to script</div></div>
+      <div class="sc"><div class="slbl">Scripted</div><div class="sval ca" id="s2">—</div><div class="ssub">ready to produce</div></div>
+      <div class="sc"><div class="slbl">Videos</div><div class="sval cg" id="s3">—</div><div class="ssub">assembled</div></div>
+      <div class="sc"><div class="slbl">Uploaded</div><div class="sval cr" id="s4">—</div><div class="ssub">published</div></div>
+    </div>
+    <div class="pcard">
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Pipeline</div>
+      <div class="psteps">
+        <div class="pstep"><div class="pdot done" id="pd0">1</div><div style="font-size:10px;color:var(--muted)">Collect</div></div>
+        <div class="pstep"><div class="pdot done" id="pd1">2</div><div style="font-size:10px;color:var(--muted)">Validate</div></div>
+        <div class="pstep"><div class="pdot" id="pd2">3</div><div style="font-size:10px;color:var(--muted)">Script</div></div>
+        <div class="pstep"><div class="pdot" id="pd3">4</div><div style="font-size:10px;color:var(--muted)">TTS+Video</div></div>
+        <div class="pstep"><div class="pdot" id="pd4">5</div><div style="font-size:10px;color:var(--muted)">Assemble</div></div>
+        <div class="pstep"><div class="pdot" id="pd5">6</div><div style="font-size:10px;color:var(--muted)">Upload</div></div>
+      </div>
+    </div>
+    <!-- Current settings summary -->
+    <div id="settings-summary" style="margin-bottom:16px"></div>
+    <div class="sh"><div class="stitle">Recent Topics</div><button class="btn" style="font-size:11px" onclick="showTab('topics',document.querySelectorAll('.nav')[2])">View all →</button></div>
+    <div class="tw"><table><thead><tr><th>Topic</th><th>Sources</th><th>Engagement</th><th>Status</th><th>Action</th></tr></thead><tbody id="tp"></tbody></table></div>
+  </div>
+</div>
+
+<!-- SETTINGS TAB -->
+<div id="t-settings" style="display:none">
+  <div class="ph">
+    <div class="ptitle">Settings</div>
+    <div class="ha">
+      <button class="btn btg" onclick="saveSettings()">Save & Apply</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="settings-grid">
+
+      <!-- Niche Selection (NEW) -->
+      <div class="scard" style="grid-column: span 2">
+        <div class="scard-title">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zm3.5 7.5a.5.5 0 010 1H5.707l2.147 2.146a.5.5 0 01-.708.708l-3-3a.5.5 0 010-.708l3-3a.5.5 0 11.708.708L5.707 7.5H11.5z"/></svg>
+          Content Niche (Multi-Niche Viral Engine)
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Select your content niche. This affects topic discovery, script generation, and upload strategy.</div>
+        <div class="niche-grid" id="niche-selector" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
+          <!-- Niche cards will be loaded here -->
+          <div style="grid-column:span 2;text-align:center;padding:20px;color:var(--muted)">Loading niches...</div>
+        </div>
+        <div style="margin-top:12px;padding:10px;background:var(--bg3);border-radius:7px">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Selected Niche:</div>
+          <div style="font-size:14px;font-weight:600;color:var(--accent)" id="selected-niche-display">None</div>
+          <div style="font-size:11px;color:var(--muted)" id="selected-niche-desc">Select a niche above</div>
+        </div>
+      </div>
+
+      <!-- Video Format -->
+      <div class="scard">
+        <div class="scard-title">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="14" height="10" rx="2"/></svg>
+          Video Format
+        </div>
+        <div class="field">
+          <label>Format Type</label>
+          <div class="fmt-grid">
+            <div class="fmt-card sel" id="fmt-shorts" onclick="selectFormat('shorts')">
+              <div class="fmt-icon">📱</div>
+              <div class="fmt-name">YouTube Shorts</div>
+              <div class="fmt-dim">9:16 · max 60s</div>
+            </div>
+            <div class="fmt-card" id="fmt-standard" onclick="selectFormat('standard')">
+              <div class="fmt-icon">🖥️</div>
+              <div class="fmt-name">Standard Video</div>
+              <div class="fmt-dim">16:9 · 60-180s</div>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Resolution</label>
+          <select id="set-resolution">
+            <option value="720p">720p (HD)</option>
+            <option value="1080p" selected>1080p (Full HD)</option>
+            <option value="4k">4K (Ultra HD)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Target Duration (seconds)</label>
+          <input type="number" id="set-duration" value="90" min="30" max="180">
+          <div style="font-size:10px;color:var(--muted);margin-top:3px">Shorts auto-cap at 58s</div>
+        </div>
+      </div>
+
+      <!-- Language & Perspective -->
+      <div class="scard">
+        <div class="scard-title">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 2a10 6 0 010 12M2 8h12"/></svg>
+          Language & Perspective
+        </div>
+        <div class="field">
+          <label>Script Language</label>
+          <select id="set-language">
+            <option value="en">English</option>
+            <option value="ur">Urdu (اردو)</option>
+            <option value="ar">Arabic (عربي)</option>
+            <option value="hi">Hindi (हिंदी)</option>
+            <option value="auto">Auto (match topic region)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Content Perspective</label>
+          <select id="set-perspective">
+            <option value="balanced">Balanced / Neutral Journalism</option>
+            <option value="pro_israel">Pro-Israel / Western Perspective</option>
+            <option value="pro_pakistan">Pro-Pakistan Perspective</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Content Style Default</label>
+          <select id="set-style">
+            <option value="journalist">Journalist</option>
+            <option value="commentary">Commentary</option>
+            <option value="humorous">Humorous</option>
+            <option value="roast">Roast</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Focus Keywords -->
+      <div class="scard">
+        <div class="scard-title">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4"/><path d="M14 14l-3.5-3.5"/></svg>
+          Focus Keywords (Always Collected)
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:10px">These topics are fetched every run regardless of trending</div>
+        <div class="kw-list" id="focus-kw-list"></div>
+        <div class="kw-input-row">
+          <input type="text" id="focus-kw-input" placeholder="Add keyword... (Enter)" onkeydown="if(event.key==='Enter')addKeyword()">
+          <button class="btn btp" onclick="addKeyword()">Add</button>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:var(--muted)">Quick add:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px">
+          <span class="badge bs" style="cursor:pointer" onclick="quickAdd('Israel Gaza war')">+ Israel Gaza</span>
+          <span class="badge bs" style="cursor:pointer" onclick="quickAdd('Netanyahu')">+ Netanyahu</span>
+          <span class="badge bs" style="cursor:pointer" onclick="quickAdd('IDF military')">+ IDF</span>
+          <span class="badge bs" style="cursor:pointer" onclick="quickAdd('Pakistan politics')">+ Pakistan politics</span>
+          <span class="badge bs" style="cursor:pointer" onclick="quickAdd('Imran Khan')">+ Imran Khan</span>
+          <span class="badge bs" style="cursor:pointer" onclick="quickAdd('Hamas')">+ Hamas</span>
+          <span class="badge bs" style="cursor:pointer" onclick="quickAdd('West Bank')">+ West Bank</span>
+          <span class="badge bs" style="cursor:pointer" onclick="quickAdd('Pakistan army')">+ Pak army</span>
+        </div>
+      </div>
+
+      <!-- Region & Trending -->
+      <div class="scard">
+        <div class="scard-title">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2C5.24 2 3 4.24 3 7c0 4 5 8 5 8s5-4 5-8c0-2.76-2.24-5-5-5z"/><circle cx="8" cy="7" r="1.5"/></svg>
+          Region & Trending
+        </div>
+        <div class="field">
+          <label>Primary Trending Region</label>
+          <div class="region-grid" id="region-grid">
+            <span class="region-pill" data-r="US" onclick="selectRegion('US',this)">🇺🇸 US</span>
+            <span class="region-pill" data-r="GB" onclick="selectRegion('GB',this)">🇬🇧 UK</span>
+            <span class="region-pill" data-r="PK" onclick="selectRegion('PK',this)">🇵🇰 Pakistan</span>
+            <span class="region-pill" data-r="IN" onclick="selectRegion('IN',this)">🇮🇳 India</span>
+            <span class="region-pill" data-r="SA" onclick="selectRegion('SA',this)">🇸🇦 Saudi Arabia</span>
+            <span class="region-pill" data-r="AE" onclick="selectRegion('AE',this)">🇦🇪 UAE</span>
+            <span class="region-pill" data-r="DE" onclick="selectRegion('DE',this)">🇩🇪 Germany</span>
+            <span class="region-pill" data-r="AU" onclick="selectRegion('AU',this)">🇦🇺 Australia</span>
+          </div>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>Max Topics Per Run</label>
+          <input type="number" id="set-max-topics" value="10" min="3" max="30">
+        </div>
+        <div class="field">
+          <label>Blocked Topics (comma-separated)</label>
+          <textarea id="set-blocked" placeholder="spam, clickbait, adult..."></textarea>
+        </div>
+      </div>
+
+      <!-- Voice Settings -->
+      <div class="scard" style="grid-column:1/-1">
+        <div class="scard-title">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1v8M5 4v2M11 4v2M3 8a5 5 0 0010 0"/><path d="M8 13v2M6 15h4"/></svg>
+          Voice Settings — 15 Profiles
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start">
+          <div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Select voice profile or set "Auto" for content-based selection</div>
+            <div class="voice-grid" id="voice-grid"></div>
+          </div>
+          <div style="min-width:180px">
+            <div class="field">
+              <label>Volume Boost</label>
+              <select id="set-volume">
+                <option value="1.0">Normal (1.0x)</option>
+                <option value="1.3">Loud (1.3x)</option>
+                <option value="1.6" selected>Louder (1.6x)</option>
+                <option value="2.0">Very Loud (2.0x)</option>
+                <option value="2.5">Max (2.5x)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>TTS Provider</label>
+              <select id="set-tts-provider">
+                <option value="openai">OpenAI TTS</option>
+                <option value="elevenlabs">ElevenLabs (key required)</option>
+              </select>
+            </div>
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:10px;font-size:11px;color:var(--muted)">
+              <div style="font-weight:500;color:var(--text);margin-bottom:4px">Selected Voice</div>
+              <div id="voice-preview">Auto (content-based)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- TOPICS -->
+<div id="t-topics" style="display:none">
+  <div class="ph">
+    <div class="ptitle">Topics</div>
+    <div class="ha">
+      <select id="fstatus" class="btn" onchange="loadTopics()" style="cursor:pointer">
+        <option value="">All</option><option value="validated">Validated</option><option value="scripted">Scripted</option><option value="assembled">Assembled</option><option value="failed">Failed</option>
+      </select>
+      <button class="btn" onclick="showViralDiscovery()">🔍 Discover Viral Topics</button>
+      <button class="btn btp" onclick="triggerCollection()">+ Collect</button>
+    </div>
+  </div>
+  <div class="content">
+    <!-- Viral Discovery Panel (hidden by default) -->
+    <div id="viral-discovery" style="display:none;margin-bottom:20px" class="pcard">
+      <div class="sh">
+        <div class="stitle">🚀 Viral Topic Discovery (Multi-Niche)</div>
+        <button class="btn" onclick="hideViralDiscovery()">✕ Close</button>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Niche</label>
+          <select id="viral-niche" onchange="updateNicheDisplay()">
+            <option value="motivation">Motivation</option>
+            <option value="finance">Finance</option>
+            <option value="ai_tech">AI & Tech</option>
+            <option value="islamic">Islamic</option>
+            <option value="health_fitness">Health & Fitness</option>
+            <option value="history">History</option>
+            <option value="facts_did_you_know">Facts</option>
+            <option value="horror_stories">Horror</option>
+            <option value="relationships">Relationships</option>
+            <option value="business">Business</option>
+            <option value="trending_viral">Trending</option>
+            <option value="current_affairs">Current Affairs</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Min Virality Score</label>
+          <input type="number" id="viral-min-score" value="70" min="0" max="100">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Max Topics</label>
+          <input type="number" id="viral-max-topics" value="10" min="1" max="50">
+        </div>
+        <div class="field">
+          <label>Region</label>
+          <select id="viral-region">
+            <option value="US">United States</option>
+            <option value="GB">United Kingdom</option>
+            <option value="PK">Pakistan</option>
+            <option value="IN">India</option>
+            <option value="CA">Canada</option>
+            <option value="AU">Australia</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btp" onclick="discoverViralTopics()">🔍 Discover Topics</button>
+      </div>
+      <div id="viral-loading" style="display:none;text-align:center;padding:20px;color:var(--muted)">
+        <span class="spin" style="width:24px;height:24px"></span>
+        <div style="margin-top:10px">Discovering viral topics...</div>
+      </div>
+      <div id="viral-results" style="display:none;margin-top:16px"></div>
+    </div>
+    
+    <div class="tw"><table><thead><tr><th>Keyword</th><th>Sources</th><th>Engagement</th><th>Status</th><th>Actions</th></tr></thead><tbody id="ttable"></tbody></table></div>
+  </div>
+</div>
+
+<!-- POSTS -->
+<div id="t-posts" style="display:none">
+  <div class="ph">
+    <div class="ptitle">Posts</div>
+    <div class="ha"><button class="btn btp" onclick="batchScript()">Generate Batch</button></div>
+  </div>
+  <div class="content">
+    <div id="posts-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px"></div>
+  </div>
+</div>
+
+<!-- VIDEOS -->
+<div id="t-videos" style="display:none">
+  <div class="ph">
+    <div class="ptitle">Videos</div>
+    <div class="ha"><button class="btn btp" onclick="batchProduce()">Produce Batch</button></div>
+  </div>
+  <div class="content"><div class="vgrid" id="vgrid"></div></div>
+</div>
+
+<!-- RUN -->
+<div id="t-run" style="display:none">
+  <div class="ph"><div class="ptitle">Run Pipeline</div></div>
+  <div class="content">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
+      <div class="pcard">
+        <div style="font-size:13px;font-weight:500;margin-bottom:6px">Step 1 — Collect Topics</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Google Trends + GNews + Focus Keywords</div>
+        <button class="btn btp" id="bcollect" onclick="triggerCollection()">Run Collection</button>
+        <div class="log" id="lc" style="display:none"></div>
+      </div>
+      <div class="pcard">
+        <div style="font-size:13px;font-weight:500;margin-bottom:6px">Step 2 — Generate Scripts</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">GPT-4o structured scripts</div>
+        <div class="sgrid">
+          <div class="sopt sel" onclick="selStyle('journalist',this)"><div class="sopt-n">Journalist</div><div class="sopt-d">Factual</div></div>
+          <div class="sopt" onclick="selStyle('commentary',this)"><div class="sopt-n">Commentary</div><div class="sopt-d">Opinionated</div></div>
+          <div class="sopt" onclick="selStyle('humorous',this)"><div class="sopt-n">Humorous</div><div class="sopt-d">Funny</div></div>
+          <div class="sopt" onclick="selStyle('roast',this)"><div class="sopt-n">Roast</div><div class="sopt-d">Mic-drop</div></div>
+        </div>
+        <button class="btn btp" onclick="batchScript()">Generate All Validated</button>
+        <div class="log" id="ls" style="display:none"></div>
+      </div>
+      <div class="pcard">
+        <div style="font-size:13px;font-weight:500;margin-bottom:6px">Step 3 — Produce Videos</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:10px">TTS + Visuals + FFmpeg</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px">
+          <label style="font-size:11px;color:var(--muted)">Limit</label>
+          <input type="number" id="plimit" value="3" min="1" max="10" style="width:55px;padding:4px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px">
+        </div>
+        <button class="btn btp" onclick="batchProduce()">Produce Videos</button>
+        <div class="log" id="lp" style="display:none"></div>
+      </div>
+      <div class="pcard">
+        <div style="font-size:13px;font-weight:500;margin-bottom:6px">Full Auto Pipeline</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Collect → Script → Produce</div>
+        <button class="btn btg" onclick="fullPipeline()">Run Full Pipeline</button>
+        <div class="log" id="lf" style="display:none"></div>
+      </div>
+    </div>
+    <div class="sh"><div class="stitle">Act on Specific Topic</div></div>
+    <div class="tw"><table><thead><tr><th>Keyword</th><th>Status</th><th>Engagement</th><th>Action</th></tr></thead><tbody id="rtable"></tbody></table></div>
+  </div>
+</div>
+
+<!-- CONTENT TO VIDEO -->
+<div id="t-content-to-video" style="display:none">
+  <div class="ph">
+    <div class="ptitle">Content to Video</div>
+    <div class="ha">
+      <button class="btn" onclick="loadContentScripts()">Refresh</button>
+    </div>
+  </div>
+  <div class="content">
+    <!-- Input Section -->
+    <div class="pcard" style="margin-bottom:16px">
+      <div class="sh">
+        <div class="stitle">Create Video from Your Content</div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px">
+        Paste an article, blog post, or any text content. AI will convert it into a professional video script and produce a video.
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Content Type</label>
+          <select id="ctv-content-type" style="width:100%;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px">
+            <option value="article">Article / Blog Post</option>
+            <option value="text">Raw Text</option>
+            <option value="url">URL (extract content)</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Video Style</label>
+          <select id="ctv-style" style="width:100%;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px">
+            <option value="journalist">Journalist (Factual)</option>
+            <option value="commentary">Commentary (Opinionated)</option>
+            <option value="humorous">Humorous (Funny)</option>
+            <option value="roast">Roast (Sarcastic)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Video Title (optional)</label>
+          <input type="text" id="ctv-title" placeholder="Leave empty to auto-generate" style="width:100%;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Duration</label>
+          <select id="ctv-duration" style="width:100%;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px">
+            <option value="60">Short (60s)</option>
+            <option value="90" selected>Standard (90s)</option>
+            <option value="120">Long (2 min)</option>
+            <option value="180">Extended (3 min)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px">
+        <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Your Content</label>
+        <textarea id="ctv-content" rows="8" placeholder="Paste your article, blog post, or text here...&#10;&#10;Or enter a URL if you selected 'URL (extract content)' above" style="width:100%;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;line-height:1.5;resize:vertical;font-family:inherit"></textarea>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox" id="ctv-auto-video" checked style="width:16px;height:16px">
+          <span style="font-size:11px;color:var(--muted)">Auto-generate video after script</span>
+        </label>
+      </div>
+
+      <button class="btn btp" id="ctv-process-btn" onclick="processContentToVideo()">
+        <span id="ctv-btn-text">🚀 Process Content</span>
+      </button>
+
+      <div class="log" id="ctv-log" style="display:none"></div>
+    </div>
+
+    <!-- Generated Scripts List -->
+    <div class="sh">
+      <div class="stitle">Your Generated Scripts</div>
+    </div>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Style</th>
+            <th>Duration</th>
+            <th>Segments</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="ctv-scripts-table"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- YOUTUBE UPLOAD -->
+<div id="t-youtube" style="display:none">
+  <div class="ph">
+    <div class="ptitle">YouTube Auto-Upload</div>
+    <div class="ha">
+      <button class="btn" onclick="loadYoutubeUploads()">Refresh</button>
+      <button class="btn btp" onclick="batchUploadToYoutube()">Upload All Approved</button>
+    </div>
+  </div>
+  <div class="content">
+    <!-- Upload Stats -->
+    <div class="srow" style="margin-bottom:22px">
+      <div class="sc"><div class="slbl">Total Uploads</div><div class="sval cb" id="yt-total">—</div><div class="ssub">videos</div></div>
+      <div class="sc"><div class="slbl">Scheduled</div><div class="sval ca" id="yt-scheduled">—</div><div class="ssub">pending</div></div>
+      <div class="sc"><div class="slbl">Published</div><div class="sval cg" id="yt-published">—</div><div class="ssub">live</div></div>
+      <div class="sc"><div class="slbl">Total Views</div><div class="sval cp" id="yt-views">—</div><div class="ssub">all time</div></div>
+      <div class="sc"><div class="slbl">Avg CTR</div><div class="sval cr" id="yt-ctr">—</div><div class="ssub">click rate</div></div>
+    </div>
+
+    <!-- Upload Controls -->
+    <div class="pcard" style="margin-bottom:16px">
+      <div class="sh">
+        <div class="stitle">Upload Controls</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:end">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Privacy Setting</label>
+          <select id="yt-privacy" style="width:100%;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px">
+            <option value="public">Public (immediate)</option>
+            <option value="unlisted">Unlisted</option>
+            <option value="private" selected>Private → Schedule</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Schedule (hours)</label>
+          <input type="number" id="yt-schedule-hours" value="24" min="1" max="168" style="width:100%;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px">Auto-Optimize</label>
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" id="yt-auto-optimize" checked style="width:16px;height:16px">
+            <span style="font-size:11px;color:var(--muted)">Best time + SEO</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload Queue -->
+    <div class="sh">
+      <div class="stitle">Upload Queue & History</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn" onclick="showYoutubeTab('queue')">Queue</button>
+        <button class="btn" onclick="showYoutubeTab('history')">History</button>
+      </div>
+    </div>
+
+    <!-- Queue Table -->
+    <div id="yt-queue-section">
+      <div class="tw"><table><thead><tr><th>Topic</th><th>Video</th><th>Thumbnail</th><th>Metadata</th><th>Status</th><th>Actions</th></tr></thead><tbody id="yt-queue"></tbody></table></div>
+    </div>
+
+    <!-- History Table -->
+    <div id="yt-history-section" style="display:none">
+      <div class="tw"><table><thead><tr><th>Uploaded</th><th>Title</th><th>Video ID</th><th>Views</th><th>CTR</th><th>Status</th><th>Actions</th></tr></thead><tbody id="yt-history"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- POST OVERLAY -->
+<div class="overlay" id="post-overlay">
+  <div class="post-modal">
+    <div class="pm-header">
+      <div class="pm-title" id="pm-title">—</div>
+      <span class="pm-close" onclick="closePost()">×</span>
+    </div>
+    <div class="pm-meta" id="pm-meta"></div>
+    <div class="pm-body">
+      <div class="pm-left">
+        <div class="pm-lbl">Script Segments<button class="copy-btn" id="copy-full-btn" onclick="copyFull()">Copy Full Script</button></div>
+        <div id="pm-segments"></div>
+      </div>
+      <div class="pm-right">
+        <div class="pm-lbl">Video Description<button class="copy-btn" id="copy-desc-btn" onclick="copyDesc()">Copy</button></div>
+        <div class="desc-box" id="pm-desc">—</div>
+        <div class="pm-lbl" style="margin-top:4px">Hashtags
+          <div style="display:flex;gap:5px">
+            <button class="copy-btn" onclick="selAllTags()">All</button>
+            <button class="copy-btn" id="copy-tags-btn" onclick="copyTags()">Copy Selected</button>
+          </div>
+        </div>
+        <div class="htags" id="pm-tags"></div>
+        <div class="pm-lbl" style="margin-top:4px">Sources</div>
+        <div id="pm-sources" style="margin-bottom:12px"></div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap" id="pm-actions"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="notif" id="notif"></div>
+
+<script>
+const API='http://localhost:8000';
+let style='journalist';
+let currentScript=null;
+let selectedTags=new Set();
+
+// Settings state
+const cfg={
+  format:'standard', resolution:'1080p', duration:90,
+  language:'en', perspective:'balanced', style:'journalist',
+  region:'US', maxTopics:10, blocked:'',
+  voice:'auto', volume:'1.6', ttsProvider:'openai',
+  focusKeywords:['Israel Gaza war','Netanyahu','IDF military','Israel Hamas','Pakistan politics','Imran Khan','Pakistan army','Pakistan news']
+};
+
+const VOICES=[
+  {id:'auto',     name:'Auto Select', desc:'Content-based selection', badge:'Smart', voice:null},
+  {id:'anchor_male',   name:'Anchor Male',   desc:'Deep authoritative', badge:'News'},
+  {id:'anchor_female', name:'Anchor Female', desc:'Confident news anchor', badge:'News'},
+  {id:'commentator_m', name:'Commentator M', desc:'Sharp political', badge:'Commentary'},
+  {id:'commentator_f', name:'Commentator F', desc:'Energetic female', badge:'Commentary'},
+  {id:'comedian_m',    name:'Comedian M',    desc:'Witty male', badge:'Humor'},
+  {id:'comedian_f',    name:'Comedian F',    desc:'Punchy female', badge:'Humor'},
+  {id:'narrator_deep', name:'Narrator Deep', desc:'Documentary style', badge:'News'},
+  {id:'narrator_warm', name:'Narrator Warm', desc:'Warm female', badge:'News'},
+  {id:'reporter_fast', name:'Reporter Fast', desc:'Breaking news pace', badge:'News'},
+  {id:'pundit_male',   name:'Pundit Male',   desc:'Calm authoritative', badge:'Commentary'},
+  {id:'pundit_female', name:'Pundit Female', desc:'Assertive female', badge:'Commentary'},
+  {id:'roaster_bold',  name:'Roaster Bold',  desc:'Fearless roaster', badge:'Roast'},
+  {id:'explainer_m',   name:'Explainer M',   desc:'Clear male voice', badge:'News'},
+  {id:'explainer_f',   name:'Explainer F',   desc:'Engaging female', badge:'Humor'},
+];
+
+const $=id=>document.getElementById(id);
+async function req(p,m='GET'){
+  const r=await fetch(API+p,{method:m,headers:{'Content-Type':'application/json'}});
+  return r.json();
+}
+
+function toast(msg,type='ok'){
+  const n=$('notif');n.textContent=msg;n.className='notif show '+type;
+  setTimeout(()=>n.className='notif',2600);
+}
+function addLog(id,msg,cls='li'){
+  const p=$(id);if(!p)return;p.style.display='block';
+  const d=document.createElement('div');d.className=cls;
+  d.textContent=new Date().toLocaleTimeString()+'  '+msg;
+  p.appendChild(d);p.scrollTop=p.scrollHeight;
+}
+
+function showTab(name,el){
+  document.querySelectorAll('[id^="t-"]').forEach(t=>t.style.display='none');
+  $('t-'+name).style.display='block';
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('on'));
+  if(el)el.classList.add('on');
+  const map={topics:loadTopics,posts:loadPosts,videos:loadVideos,settings:initSettings,
+             run:()=>{loadTopics();loadRunTopics()},dashboard:refreshAll};
+  map[name]&&map[name]();
+}
+
+function badge(s){const m={validated:'bv',scripted:'bs',assembled:'ba',uploaded:'bu',failed:'bf',discovered:'bd'};return`<span class="badge ${m[s]||'bd'}">${s}</span>`;}
+function pills(srcs){const t=[...new Set((srcs||[]).map(s=>s.source_type.replace('_api','').replace('google_','G.')))];return`<div class="spills">${t.map(x=>`<span class="spill">${x}</span>`).join('')}</div>`;}
+
+async function checkAPI(){
+  try{await req('/health');$('adot').className='adot ok';$('albl').textContent='Connected';}
+  catch{$('adot').className='adot';$('albl').textContent='Offline';}
+}
+
+async function loadStats(){
+  try{
+    const d=await req('/api/v1/pipeline/status');const p=d.pipeline||{};
+    const total=Object.values(p).reduce((a,b)=>a+b,0);
+    $('s0').textContent=total;$('s1').textContent=p.validated||0;$('s2').textContent=p.scripted||0;
+    $('s3').textContent=p.assembled||0;$('s4').textContent=p.uploaded||0;
+    [p.validated,p.validated,p.scripted,p.scripted,p.assembled,p.uploaded].forEach((v,i)=>{
+      const d=$('pd'+i);if(d)d.className='pdot'+((v||0)>0?' done':'');
+    });
+    // Settings summary
+    const fmtIcon=cfg.format==='shorts'?'📱':'🖥️';
+    const langMap={en:'EN',ur:'اردو',ar:'عربي',hi:'हि',auto:'Auto'};
+    const nicheIcon=getNicheIcon(cfg.niche || 'current_affairs');
+    $('settings-summary').innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <span class="badge bd">${fmtIcon} ${cfg.format==='shorts'?'Shorts':'Standard'}</span>
+      <span class="badge bd">${cfg.resolution}</span>
+      <span class="badge bd">🌍 ${cfg.region}</span>
+      <span class="badge bs">Lang: ${langMap[cfg.language]||cfg.language}</span>
+      <span class="badge bs">Voice: ${cfg.voice==='auto'?'Auto':cfg.voice}</span>
+      <span class="badge ba">Vol: ${cfg.volume}x</span>
+      <span class="badge bv">🎯 Niche: ${cfg.niche || 'current_affairs'}</span>
+      <span style="font-size:11px;color:var(--muted);align-self:center;cursor:pointer" onclick="showTab('settings',document.querySelectorAll('.nav')[1])">Edit settings →</span>
+    </div>`;
+  }catch{}
+}
+
+async function loadPreview(){
+  try{
+    const d=await req('/api/v1/topics?limit=6');const tb=$('tp');
+    if(!d.topics?.length){tb.innerHTML='<tr><td colspan="5" class="empty">No topics yet</td></tr>';return;}
+    tb.innerHTML=d.topics.map(t=>`<tr>
+      <td style="font-weight:500">${t.keyword}</td>
+      <td>${pills(t.sources)}</td>
+      <td style="color:var(--warn)">${Math.round(t.total_engagement||0)}</td>
+      <td>${badge(t.status)}</td>
+      <td><div class="ra">
+        ${t.status==='validated'?`<button class="btn" style="font-size:11px" onclick="genScript('${t.normalized_keyword}')">Script</button>`:''}
+        ${['scripted','assembled'].includes(t.status)?`<button class="btn" style="font-size:11px" onclick="openPost('${t.normalized_keyword}')">View Post</button>`:''}
+      </div></td>
+    </tr>`).join('');
+  }catch{}
+}
+
+async function loadTopics(){
+  const st=$('fstatus')?.value||'';
+  try{
+    const d=await req('/api/v1/topics?limit=50'+(st?'&status='+st:''));const tb=$('ttable');
+    if(!d.topics?.length){tb.innerHTML='<tr><td colspan="5" class="empty">No topics</td></tr>';return;}
+    tb.innerHTML=d.topics.map(t=>`<tr>
+      <td style="font-weight:500;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.keyword}</td>
+      <td>${pills(t.sources)}</td>
+      <td style="color:var(--warn)">${Math.round(t.total_engagement||0)}</td>
+      <td>${badge(t.status)}</td>
+      <td><div class="ra">
+        ${t.status==='validated'?`<button class="btn" style="font-size:11px" onclick="genScript('${t.normalized_keyword}')">Script</button>`:''}
+        ${['scripted','assembled'].includes(t.status)?`<button class="btn" style="font-size:11px" onclick="openPost('${t.normalized_keyword}')">View Post</button>`:''}
+        ${t.status==='scripted'?`<button class="btn" style="font-size:11px" onclick="prodVideo('${t.normalized_keyword}')">Produce</button>`:''}
+      </div></td>
+    </tr>`).join('');
+  }catch{$('ttable').innerHTML='<tr><td colspan="5" class="empty">API offline</td></tr>';}
+}
+
+async function loadRunTopics(){
+  try{
+    const d=await req('/api/v1/topics?limit=50');const tb=$('rtable');
+    if(!d.topics?.length){tb.innerHTML='<tr><td colspan="4" class="empty">No topics</td></tr>';return;}
+    tb.innerHTML=d.topics.map(t=>`<tr>
+      <td style="font-weight:500">${t.keyword}</td><td>${badge(t.status)}</td>
+      <td style="color:var(--warn)">${Math.round(t.total_engagement||0)}</td>
+      <td><div class="ra">
+        ${t.status==='validated'?`<button class="btn btp" style="font-size:11px" onclick="genScript('${t.normalized_keyword}','ls')">Generate Script</button>`:''}
+        ${t.status==='scripted'?`<button class="btn btp" style="font-size:11px" onclick="prodVideo('${t.normalized_keyword}','lp')">Produce Video</button>`:''}
+        ${['scripted','assembled'].includes(t.status)?`<button class="btn" style="font-size:11px" onclick="openPost('${t.normalized_keyword}')">View Post</button>`:''}
+        ${t.status==='assembled'?`<span style="font-size:11px;color:var(--success)">Ready ✓</span>`:''}
+        ${t.status==='failed'?`<span style="font-size:11px;color:var(--danger)">Failed</span>`:''}
+      </div></td>
+    </tr>`).join('');
+  }catch{}
+}
+
+async function loadPosts(){
+  try{
+    const [d1,d2,d3]=await Promise.all([req('/api/v1/topics?limit=30&status=scripted'),req('/api/v1/topics?limit=30&status=assembled'),req('/api/v1/topics?limit=30&status=uploaded')]);
+    const all=[...(d1.topics||[]),...(d2.topics||[]),...(d3.topics||[])];
+    const g=$('posts-grid');
+    if(!all.length){g.innerHTML='<div class="empty" style="grid-column:1/-1">No posts yet</div>';return;}
+    const cards=await Promise.all(all.map(async t=>{
+      try{
+        const s=await req('/api/v1/scripts/'+encodeURIComponent(t.normalized_keyword));
+        const tags=(s.hashtags||[]).slice(0,5).map(h=>`<span style="font-size:10px;padding:2px 7px;background:rgba(124,106,247,.1);color:#9c8ff9;border-radius:3px">#${h}</span>`).join(' ');
+        const preview=(s.segments||[]).find(x=>x.label==='hook')?.text||(s.full_text||'').slice(0,120)+'...';
+        return`<div style="background:var(--card);border:1px solid var(--border);border-radius:11px;overflow:hidden;cursor:pointer" onclick="openPost('${t.normalized_keyword}')">
+          <div style="padding:13px 15px;border-bottom:1px solid var(--border)">
+            <div style="font-size:13px;font-weight:600;line-height:1.4;margin-bottom:6px">${s.title||t.keyword}</div>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${badge(t.status)}<span class="badge bs">${s.style||'—'}</span><span style="font-size:10px;color:var(--muted)">${Math.round(s.estimated_duration_sec||0)}s</span></div>
+          </div>
+          <div style="padding:11px 15px">
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:9px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">${preview}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:9px">${tags}${(s.hashtags||[]).length>5?`<span style="font-size:10px;color:var(--muted)">+${s.hashtags.length-5}</span>`:''}</div>
+            <button class="btn btp" style="width:100%;font-size:12px" onclick="event.stopPropagation();openPost('${t.normalized_keyword}')">View Full Post</button>
+          </div>
+        </div>`;
+      }catch{return'';}
+    }));
+    g.innerHTML=cards.filter(Boolean).join('')||'<div class="empty" style="grid-column:1/-1">Loading...</div>';
+  }catch{}
+}
+
+async function loadVideos(){
+  try{
+    const d=await req('/api/v1/videos');const g=$('vgrid');
+    if(!d.videos?.length){g.innerHTML='<div class="empty">No videos yet</div>';return;}
+    g.innerHTML=d.videos.map(v=>`<div class="vcard">
+      <div class="vthumb">MP4 Ready<span class="vdur">${Math.round(v.duration_sec||0)}s</span></div>
+      <div class="vinfo">
+        <div class="vtitle">${v.topic_keyword}</div>
+        <div class="vmeta">${(v.file_size_mb||0).toFixed(1)} MB · ${new Date(v.created_at).toLocaleDateString()}</div>
+        <div style="margin-top:7px;display:flex;gap:6px">${badge(v.status)}<button class="btn" style="font-size:11px" onclick="openPost('${v.topic_keyword}')">Post</button></div>
+      </div>
+    </div>`).join('');
+  }catch{}
+}
+
+// ── Settings ──────────────────────────────────────────────
+
+function initSettings(){
+  // Sync UI from cfg
+  selectFormat(cfg.format);
+  $('set-resolution').value=cfg.resolution;
+  $('set-duration').value=cfg.duration;
+  $('set-language').value=cfg.language;
+  $('set-perspective').value=cfg.perspective;
+  $('set-style').value=cfg.style;
+  $('set-max-topics').value=cfg.maxTopics;
+  $('set-blocked').value=cfg.blocked;
+  $('set-volume').value=cfg.volume;
+  $('set-tts-provider').value=cfg.ttsProvider;
+
+  // Region
+  document.querySelectorAll('.region-pill').forEach(p=>{
+    p.classList.toggle('sel',p.dataset.r===cfg.region);
+  });
+
+  // Keywords
+  renderKeywords();
+
+  // Voices
+  renderVoices();
+  
+  // Load niches (NEW - Viral Content Engine)
+  loadNiches();
+}
+
+function renderKeywords(){
+  const list=$('focus-kw-list');
+  list.innerHTML=cfg.focusKeywords.map(kw=>`
+    <span class="kw-tag">${kw}<span class="x" onclick="removeKeyword('${kw}')">×</span></span>`).join('');
+}
+
+function renderVoices(){
+  const grid=$('voice-grid');
+  grid.innerHTML=VOICES.map(v=>`
+    <div class="voice-card ${cfg.voice===v.id?'sel':''}" onclick="selectVoice('${v.id}')">
+      <div class="vc-name">${v.name}</div>
+      <div class="vc-desc">${v.desc}</div>
+      <span class="vc-badge">${v.badge}</span>
+    </div>`).join('');
+}
+
+function selectFormat(fmt){
+  cfg.format=fmt;
+  document.querySelectorAll('.fmt-card').forEach(c=>c.classList.remove('sel'));
+  $('fmt-'+fmt)?.classList.add('sel');
+  if(fmt==='shorts'&&parseInt($('set-duration').value)>58) $('set-duration').value=58;
+}
+
+function selectRegion(r,el){
+  cfg.region=r;
+  document.querySelectorAll('.region-pill').forEach(p=>p.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function selectVoice(id){
+  cfg.voice=id;
+  renderVoices();
+  const v=VOICES.find(x=>x.id===id);
+  $('voice-preview').textContent=v?`${v.name} — ${v.desc}`:'Auto';
+}
+
+function addKeyword(){
+  const inp=$('focus-kw-input');
+  const val=inp.value.trim();
+  if(val&&!cfg.focusKeywords.includes(val)){
+    cfg.focusKeywords.push(val);
+    renderKeywords();
+    inp.value='';
+  }
+}
+
+function removeKeyword(kw){
+  cfg.focusKeywords=cfg.focusKeywords.filter(k=>k!==kw);
+  renderKeywords();
+}
+
+function quickAdd(kw){
+  if(!cfg.focusKeywords.includes(kw)){
+    cfg.focusKeywords.push(kw);
+    renderKeywords();
+    toast(`Added: ${kw}`);
+  }
+}
+
+async function saveSettings(){
+  cfg.resolution=$('set-resolution').value;
+  cfg.duration=parseInt($('set-duration').value)||90;
+  cfg.language=$('set-language').value;
+  cfg.perspective=$('set-perspective').value;
+  cfg.style=$('set-style').value;
+  cfg.maxTopics=parseInt($('set-max-topics').value)||10;
+  cfg.blocked=$('set-blocked').value;
+  cfg.volume=$('set-volume').value;
+  cfg.ttsProvider=$('set-tts-provider').value;
+  cfg.niche=selectedNiche;  // Save selected niche
+
+  // Save to localStorage for persistence
+  localStorage.setItem('automedia_cfg',JSON.stringify(cfg));
+
+  // Push to backend via API
+  try{
+    const params=new URLSearchParams({
+      video_format: cfg.format,
+      video_resolution: cfg.resolution,
+      target_video_duration: cfg.duration,
+      script_language: cfg.language,
+      content_perspective: cfg.perspective,
+      trending_region: cfg.region,
+      max_topics_per_run: cfg.maxTopics,
+      blocked_topics: cfg.blocked,
+      openai_tts_voice: cfg.voice,
+      tts_volume_boost: cfg.volume,
+      focus_keywords: cfg.focusKeywords.join(','),
+      content_niche: cfg.niche || 'current_affairs',  // Add niche parameter
+    });
+    await req('/api/v1/settings/update?'+params.toString(),'POST');
+    toast('Settings saved & applied! (Niche: '+(cfg.niche || 'current_affairs')+')');
+  }catch{
+    // API endpoint may not exist yet — still save locally
+    toast('Settings saved locally (restart to apply)');
+  }
+  style=cfg.style;
+}
+
+function loadSavedSettings(){
+  try{
+    const saved=localStorage.getItem('automedia_cfg');
+    if(saved){
+      const data=JSON.parse(saved);
+      Object.assign(cfg,data);
+      // Restore niche if saved
+      if(data.niche){
+        selectedNiche=data.niche;
+        // Update niche display when settings load
+        setTimeout(()=>{
+          selectNiche(data.niche);
+        },100);
+      }
+    }
+  }catch{}
+}
+
+// ── Post Detail ────────────────────────────────────────────
+
+async function openPost(kw){
+  selectedTags=new Set();currentScript=null;
+  try{
+    const [s,td]=await Promise.all([
+      req('/api/v1/scripts/'+encodeURIComponent(kw)),
+      req('/api/v1/topics?limit=100').then(d=>(d.topics||[]).find(t=>t.normalized_keyword===kw||t.topic_keyword===kw))
+    ]);
+    currentScript=s;
+    $('pm-title').textContent=s.title||kw;
+    $('pm-meta').innerHTML=`<span class="badge bs">${s.style||'—'}</span><span class="badge ba">${Math.round(s.estimated_duration_sec||0)}s</span><span style="font-size:11px;color:var(--muted)">${(s.hashtags||[]).length} hashtags</span>`;
+    const segC={hook:'hook',context:'context',evidence:'evidence',analysis:'analysis',cta:'cta'};
+    $('pm-segments').innerHTML=(s.segments||[]).map(seg=>`
+      <div class="seg">
+        <div class="seg-lbl ${segC[seg.label]||''}">${seg.label} · ${Math.round(seg.duration_estimate_sec||0)}s</div>
+        <div class="seg-txt">${seg.text}</div>
+        ${seg.visual_cue?`<div class="seg-vis">Visual: ${seg.visual_cue}</div>`:''}
+      </div>`).join('');
+    $('pm-desc').textContent=s.description||'No description';
+    selectedTags=new Set((s.hashtags||[]).map(h=>h));
+    $('pm-tags').innerHTML=(s.hashtags||[]).map(h=>`<span class="htag sel" data-tag="${h}" onclick="toggleTag(this,'${h}')">#${h}</span>`).join('');
+    const sources=td?.sources||[];
+    $('pm-sources').innerHTML=sources.filter(s=>s.url).slice(0,5).map(s=>`<a class="src-link" href="${s.url}" target="_blank">${s.title||s.url}</a>`).join('')||'<span style="font-size:11px;color:var(--muted)">No sources</span>';
+    $('pm-actions').innerHTML=`
+      ${td?.status==='scripted'?`<button class="btn btp" onclick="prodVideo('${kw}');closePost()">Produce Video</button>`:''}
+      ${td?.status==='assembled'?`<span style="color:var(--success);font-size:12px">Video assembled ✓</span>`:''}
+      <button class="btn" onclick="regenScript('${kw}')">Regenerate</button>`;
+    $('post-overlay').classList.add('open');
+  }catch{toast('Could not load post','err');}
+}
+
+function closePost(){$('post-overlay').classList.remove('open');}
+function toggleTag(el,t){if(selectedTags.has(t)){selectedTags.delete(t);el.classList.remove('sel');}else{selectedTags.add(t);el.classList.add('sel');}}
+function selAllTags(){document.querySelectorAll('.htag').forEach(el=>{selectedTags.add(el.dataset.tag);el.classList.add('sel');});}
+function copyTags(){navigator.clipboard.writeText([...selectedTags].map(h=>'#'+h).join(' '));copyFlash('copy-tags-btn','Copy Selected');}
+function copyDesc(){navigator.clipboard.writeText($('pm-desc').textContent);copyFlash('copy-desc-btn','Copy');}
+function copyFull(){if(!currentScript)return;navigator.clipboard.writeText((currentScript.segments||[]).map(s=>`[${s.label.toUpperCase()}]\n${s.text}`).join('\n\n'));copyFlash('copy-full-btn','Copy Full Script');}
+function copyFlash(id,orig){const b=$(id);b.textContent='Copied!';b.classList.add('ok');toast('Copied!');setTimeout(()=>{b.textContent=orig;b.classList.remove('ok');},2000);}
+async function regenScript(kw){toast('Regenerating...');try{const d=await req('/api/v1/scripts/generate/'+encodeURIComponent(kw)+'?style='+style,'POST');toast('Done: '+d.title);openPost(kw);}catch{toast('Failed','err');}}
+
+// ── YouTube Upload Functions ────────────────────────────────────────────────
+
+let youtubeUploads = [];
+let youtubeHistory = [];
+
+function showYoutubeTab(tab) {
+  if (tab === 'queue') {
+    $('yt-queue-section').style.display = 'block';
+    $('yt-history-section').style.display = 'none';
+  } else {
+    $('yt-queue-section').style.display = 'none';
+    $('yt-history-section').style.display = 'block';
+  }
+}
+
+async function loadYoutubeUploads() {
+  try {
+    const [uploads, videos] = await Promise.all([
+      req('/api/v1/youtube/uploads?limit=50'),
+      req('/api/v1/videos?limit=100'),
+    ]);
+    
+    youtubeUploads = uploads.uploads || [];
+    const assembledVideos = (videos.videos || []).filter(v => v.status === 'assembled');
+    
+    // Update stats
+    const total = youtubeUploads.length;
+    const scheduled = youtubeUploads.filter(u => u.upload_result?.scheduled_for).length;
+    const published = youtubeUploads.filter(u => u.upload_result?.privacy === 'public').length;
+    
+    $('yt-total').textContent = total;
+    $('yt-scheduled').textContent = scheduled;
+    $('yt-published').textContent = published;
+    $('yt-views').textContent = '—';  // Would need analytics API
+    $('yt-ctr').textContent = '—';    // Would need analytics API
+    
+    // Render queue (assembled videos not yet uploaded)
+    const uploadedKeywords = new Set(youtubeUploads.map(u => u.topic_keyword));
+    const queue = assembledVideos.filter(v => !uploadedKeywords.has(v.topic_keyword));
+    
+    $('yt-queue').innerHTML = queue.length ? queue.map(v => `
+      <tr>
+        <td style="font-weight:500">${v.topic_keyword || '—'}</td>
+        <td>${v.output_path ? '✓' : '✗'}</td>
+        <td>${v.thumbnail_path ? '✓' : '✗'}</td>
+        <td><span class="badge ba">Auto-gen</span></td>
+        <td><span class="badge bv">Ready</span></td>
+        <td class="ra">
+          <button class="btn btp" style="padding:3px 8px;font-size:10px" onclick="uploadToYoutube('${v.topic_keyword}')">Upload</button>
+          <button class="btn" style="padding:3px 8px;font-size:10px" onclick="previewMetadata('${v.topic_keyword}')">Preview</button>
+        </td>
+      </tr>
+    `).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">No videos in queue — all assembled videos are uploaded</td></tr>';
+    
+    // Render history
+    youtubeHistory = youtubeUploads;
+    $('yt-history').innerHTML = youtubeHistory.length ? youtubeHistory.map(u => {
+      const result = u.upload_result || {};
+      const scheduled = result.scheduled_for ? new Date(result.scheduled_for).toLocaleDateString() : '—';
+      const privacy = result.privacy || '—';
+      
+      return `
+        <tr>
+          <td>${u.uploaded_at ? new Date(u.uploaded_at).toLocaleDateString() : '—'}</td>
+          <td style="font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.metadata?.best_title || u.topic_keyword || '—'}</td>
+          <td><a href="https://youtube.com/watch?v=${u.video_id}" target="_blank" style="color:var(--accent)">${u.video_id || '—'}</a></td>
+          <td>—</td>
+          <td>—</td>
+          <td><span class="badge ${privacy === 'public' ? 'bu' : privacy === 'private' ? 'bf' : 'ba'}">${privacy}</span></td>
+          <td class="ra">
+            ${result.scheduled_for ? `<span style="font-size:10px;color:var(--muted)">Sched: ${scheduled}</span>` : ''}
+            <button class="btn" style="padding:3px 8px;font-size:10px" onclick="viewAnalytics('${u.video_id}')">Stats</button>
+          </td>
+        </tr>
+      `;
+    }).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">No uploads yet</td></tr>';
+    
+  } catch (e) {
+    console.error('YouTube load failed:', e);
+    $('yt-queue').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--danger);padding:20px">Failed to load — API may be offline</td></tr>';
+    $('yt-history').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--danger);padding:20px">Failed to load</td></tr>';
+  }
+}
+
+async function uploadToYoutube(keyword) {
+  const hours = parseInt($('yt-schedule-hours').value) || 24;
+  const privacy = $('yt-privacy').value;
+  const autoOptimize = $('yt-auto-optimize').checked;
+  
+  toast('Upload queued for: ' + keyword);
+  
+  try {
+    if (privacy === 'private' && autoOptimize) {
+      // Schedule upload
+      await req(`/api/v1/youtube/schedule/${encodeURIComponent(keyword)}?hours=${hours}`, 'POST');
+      toast('Scheduled for ' + hours + ' hours from now');
+    } else {
+      // Immediate upload
+      await req(`/api/v1/youtube/upload/${encodeURIComponent(keyword)}?auto_publish=${privacy === 'public'}`, 'POST');
+      toast('Upload started');
+    }
+    
+    setTimeout(loadYoutubeUploads, 5000);
+  } catch (e) {
+    toast('Upload failed: ' + e.message, 'err');
+  }
+}
+
+async function batchUploadToYoutube() {
+  const videos = await req('/api/v1/videos?status=assembled&limit=10');
+  const assembled = videos.videos || [];
+  
+  if (!assembled.length) {
+    toast('No assembled videos to upload');
+    return;
+  }
+  
+  if (!confirm(`Upload ${assembled.length} videos to YouTube?`)) return;
+  
+  toast('Batch upload started...');
+  
+  for (const v of assembled) {
+    try {
+      await uploadToYoutube(v.topic_keyword);
+      await new Promise(r => setTimeout(r, 1000));  // Stagger uploads
+    } catch (e) {
+      console.error('Batch upload failed for', v.topic_keyword, e);
+    }
+  }
+  
+  toast('Batch upload complete');
+  loadYoutubeUploads();
+}
+
+async function previewMetadata(keyword) {
+  try {
+    const metadata = await req(`/api/v1/youtube/metadata/${encodeURIComponent(keyword)}`);
+    
+    const titles = metadata.metadata?.titles || [];
+    const description = metadata.metadata?.description || 'No description';
+    const tags = metadata.metadata?.tags || [];
+    
+    const html = `
+      <div style="padding:15px">
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:var(--accent)">Generated Titles (5 variants)</div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:15px">
+          ${titles.map((t, i) => `<div style="font-size:11px;padding:6px 10px;background:var(--bg3);border-radius:5px">${i + 1}. ${t}</div>`).join('')}
+        </div>
+        
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px">Description Preview</div>
+        <div style="font-size:11px;line-height:1.6;color:var(--muted);max-height:150px;overflow-y:auto;margin-bottom:15px">${description}</div>
+        
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px">Tags (${tags.length})</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:15px">
+          ${tags.slice(0, 15).map(t => `<span class="badge bs">${t}</span>`).join('')}
+        </div>
+        
+        <button class="btn btp" onclick="uploadToYoutube('${keyword}');this.closest('.modal').remove()">Upload with This Metadata</button>
+      </div>
+    `;
+    
+    // Simple modal
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = html;
+    modal.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;max-width:500px;z-index:1000;box-shadow:0 10px 40px rgba(0,0,0,.5)';
+    document.body.appendChild(modal);
+    
+  } catch (e) {
+    toast('Failed to load metadata: ' + e.message, 'err');
+  }
+}
+
+async function viewAnalytics(videoId) {
+  try {
+    const report = await req(`/api/v1/youtube/analytics/${videoId}`);
+    
+    const metrics = report.metrics || {};
+    const status = report.status || '—';
+    const recommendations = report.recommendations || [];
+    
+    const html = `
+      <div style="padding:15px">
+        <div style="font-size:13px;font-weight:500;margin-bottom:15px">Analytics: ${videoId}</div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px">
+          <div style="padding:10px;background:var(--bg3);border-radius:7px">
+            <div style="font-size:10px;color:var(--muted)">Views</div>
+            <div style="font-size:20px;font-weight:600">${metrics.views || 0}</div>
+          </div>
+          <div style="padding:10px;background:var(--bg3);border-radius:7px">
+            <div style="font-size:10px;color:var(--muted)">CTR</div>
+            <div style="font-size:20px;font-weight:600">${metrics.ctr || 0}%</div>
+          </div>
+          <div style="padding:10px;background:var(--bg3);border-radius:7px">
+            <div style="font-size:10px;color:var(--muted)">Watch Time</div>
+            <div style="font-size:20px;font-weight:600">${metrics.watch_time_hours || 0}h</div>
+          </div>
+          <div style="padding:10px;background:var(--bg3);border-radius:7px">
+            <div style="font-size:10px;color:var(--muted)">Status</div>
+            <div style="font-size:14px;font-weight:500">${status}</div>
+          </div>
+        </div>
+        
+        ${recommendations.length ? `
+          <div style="font-size:13px;font-weight:500;margin-bottom:10px">Recommendations</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            ${recommendations.map(r => `<div style="font-size:11px;padding:6px 10px;background:var(--bg3);border-left:3px solid var(--accent);border-radius:5px">${r}</div>`).join('')}
+          </div>
+        ` : ''}
+        
+        <div style="margin-top:15px;text-align:right">
+          <button class="btn" onclick="this.closest('.modal').remove()">Close</button>
+        </div>
+      </div>
+    `;
+    
+    const modal = document.createElement('div');
+    modal.innerHTML = html;
+    modal.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;max-width:500px;z-index:1000;box-shadow:0 10px 40px rgba(0,0,0,.5)';
+    document.body.appendChild(modal);
+    
+  } catch (e) {
+    toast('Analytics failed: ' + e.message, 'err');
+  }
+}
+
+// ── Pipeline ────────────────────────────────────────────────
+
+async function triggerCollection(){
+  const b=$('bcollect');if(b)b.innerHTML='<span class="spin"></span>Running...';
+  addLog('lc','Collecting (Focus: '+cfg.focusKeywords.slice(0,3).join(', ')+'...)','li');
+  try{
+    await req('/api/v1/collect/run','POST');
+    toast('Collection started!');addLog('lc','Triggered — focus keywords injected','ls');
+    setTimeout(refreshAll,10000);
+  }catch{toast('API offline','err');addLog('lc','Failed','le');}
+  if(b)b.innerHTML='Run Collection';
+}
+
+async function genScript(kw,logId=''){
+  if(logId)addLog(logId,'Generating: '+kw,'li');
+  toast('Generating script...');
+  try{
+    const d=await req('/api/v1/scripts/generate/'+encodeURIComponent(kw)+'?style='+style,'POST');
+    toast('Script ready: '+d.title);if(logId)addLog(logId,'Done: '+d.title,'ls');
+    refreshAll();loadRunTopics();
+  }catch{toast('Script failed','err');}
+}
+
+async function prodVideo(kw,logId=''){
+  if(logId)addLog(logId,'Producing: '+kw,'li');
+  toast('Video production started (~3-5 min)');
+  try{
+    await req('/api/v1/videos/produce/'+encodeURIComponent(kw),'POST');
+    if(logId)addLog(logId,'Triggered: '+kw,'ls');
+    setTimeout(()=>{refreshAll();loadRunTopics();},30000);
+  }catch{}
+}
+
+async function batchScript(){
+  addLog('ls','Batch generating...','li');
+  try{const d=await req('/api/v1/scripts/generate-batch?limit=10&style='+style,'POST');
+    toast('Generated '+(d.generated||0)+' scripts');addLog('ls','Done: '+(d.generated||0),'ls');refreshAll();}
+  catch{addLog('ls','Error','le');}
+}
+
+async function batchProduce(){
+  const lim=$('plimit')?.value||3;
+  addLog('lp','Batch produce limit='+lim,'li');toast('Batch production started');
+  try{await req('/api/v1/videos/produce-batch?limit='+lim,'POST');addLog('lp','Triggered','ls');setTimeout(refreshAll,15000);}
+  catch{addLog('lp','Error','le');}
+}
+
+async function fullPipeline(){
+  addLog('lf','Full pipeline...','li');await triggerCollection();
+  addLog('lf','Waiting 25s...','lw');
+  setTimeout(async()=>{await batchScript();addLog('lf','Waiting 15s...','lw');
+    setTimeout(async()=>{await batchProduce();addLog('lf','Done!','ls');},15000);},25000);
+}
+
+function selStyle(s,el){style=s;document.querySelectorAll('.sopt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');}
+
+async function refreshAll(){await checkAPI();await loadStats();await loadPreview();await loadYoutubeUploads();}
+
+// ── Viral Content Engine Functions ────────────────────────────────────────────────
+
+let viralTopicsCache = [];
+let selectedNiche = 'motivation';
+
+// Show viral discovery panel
+function showViralDiscovery() {
+  $('viral-discovery').style.display = 'block';
+  loadNiches();
+}
+
+function hideViralDiscovery() {
+  $('viral-discovery').style.display = 'none';
+}
+
+// Load all available niches
+async function loadNiches() {
+  try {
+    const data = await req('/api/v2/viral/niches');
+    const niches = data.niches || [];
+    
+    $('niche-selector').innerHTML = niches.map(n => `
+      <div class="niche-card sel" id="niche-${n.id}" onclick="selectNiche('${n.id}')" style="padding:10px;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s">
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px">${getNicheIcon(n.id)} ${n.name}</div>
+        <div style="font-size:10px;color:var(--muted);margin-bottom:6px">${n.description || ''}</div>
+        <div style="display:flex;gap:8px">
+          <span class="badge bv">Virality: ${n.virality_threshold || 60}+</span>
+          <span class="badge ba">Daily: ${n.daily_limit || 5}</span>
+        </div>
+      </div>
+    `).join('');
+    
+    // Select first niche by default
+    if (niches.length > 0 && !selectedNiche) {
+      selectNiche(niches[0].id);
+    }
+  } catch (e) {
+    $('niche-selector').innerHTML = '<div style="grid-column:span 2;text-align:center;color:var(--danger);padding:20px">Failed to load niches</div>';
+  }
+}
+
+function getNicheIcon(niche) {
+  const icons = {
+    motivation: '💪', finance: '💰', ai_tech: '🤖', islamic: '☪️',
+    health_fitness: '💪', history: '📜', facts_did_you_know: '💡',
+    horror_stories: '👻', relationships: '💕', business: '💼',
+    trending_viral: '🔥', current_affairs: '📰'
+  };
+  return icons[niche] || '📁';
+}
+
+function selectNiche(nicheId) {
+  selectedNiche = nicheId;
+  document.querySelectorAll('.niche-card').forEach(c => c.classList.remove('sel'));
+  const card = $(`niche-${nicheId}`);
+  if (card) card.classList.add('sel');
+  
+  // Update display
+  const nicheData = {
+    motivation: { name: 'Motivation', desc: 'Self-improvement and success content' },
+    finance: { name: 'Finance', desc: 'Investing, crypto, and money tips' },
+    ai_tech: { name: 'AI & Tech', desc: 'AI tools and technology news' },
+    islamic: { name: 'Islamic', desc: 'Islamic reminders and teachings' },
+    health_fitness: { name: 'Health & Fitness', desc: 'Workout and nutrition content' },
+    history: { name: 'History', desc: 'Historical events and documentaries' },
+    facts_did_you_know: { name: 'Facts', desc: 'Mind-blowing facts and trivia' },
+    horror_stories: { name: 'Horror', desc: 'True crime and paranormal' },
+    relationships: { name: 'Relationships', desc: 'Dating and relationship advice' },
+    business: { name: 'Business', desc: 'Entrepreneurship and success stories' },
+    trending_viral: { name: 'Trending', desc: 'Currently trending topics' },
+    current_affairs: { name: 'Current Affairs', desc: 'Breaking news and politics' }
+  };
+  
+  const data = nicheData[nicheId] || { name: nicheId, desc: '' };
+  $('selected-niche-display').textContent = data.name;
+  $('selected-niche-desc').textContent = data.desc;
+  
+  // Update viral discovery select
+  $('viral-niche').value = nicheId;
+}
+
+function updateNicheDisplay() {
+  const niche = $('viral-niche').value;
+  selectNiche(niche);
+}
+
+// Discover viral topics
+async function discoverViralTopics() {
+  const niche = $('viral-niche').value;
+  const minScore = parseInt($('viral-min-score').value) || 70;
+  const maxTopics = parseInt($('viral-max-topics').value) || 10;
+  
+  $('viral-loading').style.display = 'block';
+  $('viral-results').style.display = 'none';
+  
+  try {
+    const data = await req('/api/v2/viral/topics/discover', 'POST', {
+      niche: niche,
+      region: $('viral-region').value,
+      language: 'en',
+      max_topics: maxTopics,
+      min_virality_score: minScore
+    });
+    
+    viralTopicsCache = data.topics || [];
+    $('viral-loading').style.display = 'none';
+    $('viral-results').style.display = 'block';
+    
+    if (!viralTopicsCache.length) {
+      $('viral-results').innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px">No viral topics found. Try lowering the virality threshold.</div>';
+      return;
+    }
+    
+    $('viral-results').innerHTML = `
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px">
+        Found ${viralTopicsCache.length} topics · Avg Virality: ${Math.round(data.avg_virality_score || 0)}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
+        ${viralTopicsCache.map((t, i) => `
+          <div style="padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px">
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px">
+              <div style="width:40px;height:40px;border-radius:6px;background:${getScoreColor(t.virality_score)};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff">
+                ${Math.round(t.virality_score)}
+              </div>
+              <div style="flex:1;font-size:12px;font-weight:500;line-height:1.3">${t.topic}</div>
+            </div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">
+              <span class="badge bv">${t.emotional_triggers?.[0] || 'neutral'}</span>
+              <span class="badge bs">${t.ctr_patterns?.[0] || 'standard'}</span>
+              ${t.is_validated ? '<span class="badge bu">✓ Validated</span>' : ''}
+            </div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:8px">${t.virality_score?.reason || 'Good viral potential'}</div>
+            <div style="display:flex;gap:6px">
+              <button class="btn btp" style="flex:1;padding:4px 8px;font-size:10px" onclick="useViralTopic(${i})">Use for Script</button>
+              <button class="btn" style="padding:4px 8px;font-size:10px" onclick="viewViralTopic(${i})">Details</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    
+    toast(`Found ${viralTopicsCache.length} viral topics`);
+  } catch (e) {
+    $('viral-loading').style.display = 'none';
+    $('viral-results').style.display = 'block';
+    $('viral-results').innerHTML = `<div style="text-align:center;color:var(--danger);padding:20px">Failed: ${e.message}</div>`;
+    toast('Failed to discover topics', 'err');
+  }
+}
+
+function getScoreColor(score) {
+  if (score >= 80) return '#5dcaa5';
+  if (score >= 60) return '#ef9f27';
+  return '#e24b4a';
+}
+
+function useViralTopic(index) {
+  const topic = viralTopicsCache[index];
+  // Store in localStorage for script generation
+  localStorage.setItem('viral_topic', JSON.stringify(topic));
+  toast(`Selected: ${topic.topic}`);
+  // Switch to posts tab and auto-generate script
+  showTab('posts', document.querySelectorAll('.nav')[3]);
+  // Could auto-trigger script generation here
+}
+
+function viewViralTopic(index) {
+  const t = viralTopicsCache[index];
+  const html = `
+    <div style="padding:15px">
+      <div style="font-size:14px;font-weight:600;margin-bottom:10px">${t.topic}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px">
+        <div style="padding:8px;background:var(--bg3);border-radius:6px">
+          <div style="font-size:9px;color:var(--muted)">Trend Score</div>
+          <div style="font-size:16px;font-weight:600">${Math.round(t.virality_score?.trend || 0)}</div>
+        </div>
+        <div style="padding:8px;background:var(--bg3);border-radius:6px">
+          <div style="font-size:9px;color:var(--muted)">Emotional</div>
+          <div style="font-size:16px;font-weight:600">${Math.round(t.virality_score?.emotional || 0)}</div>
+        </div>
+        <div style="padding:8px;background:var(--bg3);border-radius:6px">
+          <div style="font-size:9px;color:var(--muted)">CTR Potential</div>
+          <div style="font-size:16px;font-weight:600">${Math.round(t.virality_score?.ctr || 0)}</div>
+        </div>
+        <div style="padding:8px;background:var(--bg3);border-radius:6px">
+          <div style="font-size:9px;color:var(--muted)">Engagement</div>
+          <div style="font-size:16px;font-weight:600">${Math.round(t.virality_score?.engagement || 0)}</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Emotional Triggers: ${(t.emotional_triggers || []).join(', ')}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:15px">CTR Patterns: ${(t.ctr_patterns || []).join(', ')}</div>
+      <button class="btn btp" onclick="useViralTopic(${index});this.closest('.modal')?.remove()">Use This Topic</button>
+    </div>
+  `;
+  
+  // Simple modal
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.innerHTML = html;
+  modal.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;max-width:500px;z-index:1000;box-shadow:0 10px 40px rgba(0,0,0,.5)';
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  document.body.appendChild(modal);
+}
+
+// ── End Viral Content Engine Functions ────────────────────────────────────────────────
+
+// ── Content to Video Functions ────────────────────────────────────────────────
+
+async function processContentToVideo() {
+  const contentType = $('ctv-content-type').value;
+  const style = $('ctv-style').value;
+  const title = $('ctv-title').value.trim();
+  const duration = parseInt($('ctv-duration').value);
+  const content = $('ctv-content').value.trim();
+  const autoVideo = $('ctv-auto-video').checked;
+
+  if (!content || content.length < 50) {
+    toast('Please enter at least 50 characters of content', 'err');
+    return;
+  }
+
+  const btn = $('ctv-process-btn');
+  const btnText = $('ctv-btn-text');
+  const log = $('ctv-log');
+
+  btn.disabled = true;
+  btnText.textContent = '⏳ Processing...';
+  log.style.display = 'block';
+  log.innerHTML = '';
+
+  addLog('ctv-log', 'Starting content processing...', 'li');
+
+  try {
+    const payload = {
+      content: content,
+      title: title || null,
+      content_type: contentType,
+      target_duration_sec: duration,
+      style: style,
+      language: 'en',
+      auto_generate_video: autoVideo,
+    };
+
+    const response = await fetch(`${API}/api/v1/content-to-video/process`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Processing failed');
+    }
+
+    const result = await response.json();
+
+    addLog('ctv-log', `✓ Script generated: ${result.script.title}`, 'ls');
+
+    if (autoVideo) {
+      addLog('ctv-log', '✓ Video production queued', 'ls');
+      addLog('ctv-log', 'Check Videos tab for progress', 'li');
+    }
+
+    toast('Content processed successfully!', 'ok');
+
+    // Clear form
+    $('ctv-content').value = '';
+    $('ctv-title').value = '';
+
+    // Reload scripts list
+    loadContentScripts();
+
+  } catch (error) {
+    addLog('ctv-log', `✗ Error: ${error.message}`, 'le');
+    toast(`Error: ${error.message}`, 'err');
+  } finally {
+    btn.disabled = false;
+    btnText.textContent = '🚀 Process Content';
+  }
+}
+
+async function loadContentScripts() {
+  try {
+    const response = await fetch(`${API}/api/v1/content-to-video/scripts`);
+    const data = await response.json();
+
+    const tbody = $('ctv-scripts-table');
+    tbody.innerHTML = '';
+
+    if (!data.scripts || data.scripts.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted)">No scripts generated yet. Process your first content above!</td></tr>';
+      return;
+    }
+
+    data.scripts.forEach(script => {
+      const tr = document.createElement('tr');
+      const status = script.status || 'scripted';
+      const statusClass = {
+        'scripted': 'bs',
+        'producing': 'ba',
+        'assembled': 'bu',
+        'uploaded': 'bg'
+      }[status] || 'bd';
+
+      tr.innerHTML = `
+        <td style="font-weight:500">${script.title || 'Untitled'}</td>
+        <td><span class="badge ${statusClass}">${script.style || 'journalist'}</span></td>
+        <td>${script.estimated_duration_sec || 90}s</td>
+        <td>${(script.segments || []).length}</td>
+        <td><span class="badge ${statusClass}">${status}</span></td>
+        <td style="display:flex;gap:5px">
+          <button class="btn" style="padding:4px 8px;font-size:10px" onclick="viewContentScript('${script.topic_keyword}')">View</button>
+          ${status === 'scripted' ? `<button class="btn btp" style="padding:4px 8px;font-size:10px" onclick="produceContentVideo('${script.topic_keyword}')">Produce Video</button>` : ''}
+          ${status === 'assembled' ? `<button class="btn btg" style="padding:4px 8px;font-size:10px" onclick="window.open('/api/v1/videos/${script.topic_keyword}', '_blank')">Download</button>` : ''}
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+  } catch (error) {
+    console.error('Failed to load content scripts:', error);
+    toast('Failed to load scripts', 'err');
+  }
+}
+
+async function viewContentScript(keyword) {
+  try {
+    const response = await fetch(`${API}/api/v1/content-to-video/script/${keyword}`);
+    const script = await response.json();
+
+    if (!script.title) {
+      toast('Script not found', 'err');
+      return;
+    }
+
+    // Show in modal
+    const modal = document.createElement('div');
+    modal.className = 'overlay open';
+    modal.innerHTML = `
+      <div class="post-modal" style="max-width:700px">
+        <div class="pm-header">
+          <div class="pm-title">${script.title}</div>
+          <div class="pm-close" onclick="this.closest('.overlay').remove()">×</div>
+        </div>
+        <div class="pm-body">
+          <div class="pm-left">
+            <div class="l-bl">Script Segments</div>
+            <div style="max-height:400px;overflow-y:auto">
+              ${(script.segments || []).map((seg, i) => `
+                <div class="seg" style="margin-bottom:8px">
+                  <div class="seg-lbl ${seg.type || 'content'}">${seg.type || 'Content'} #${i + 1}</div>
+                  <div class="seg-txt">${seg.text || ''}</div>
+                  ${seg.visual_cue ? `<div class="seg-vis">🎬 ${seg.visual_cue}</div>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <div class="pm-right">
+            <div class="l-bl">Details</div>
+            <div style="font-size:11px;line-height:1.8">
+              <div><strong>Style:</strong> ${script.style || 'journalist'}</div>
+              <div><strong>Duration:</strong> ${script.estimated_duration_sec || 90}s</div>
+              <div><strong>Segments:</strong> ${(script.segments || []).length}</div>
+              <div style="margin-top:10px"><strong>Description:</strong></div>
+              <div class="desc-box">${script.description || 'No description'}</div>
+              <div style="margin-top:10px"><strong>Hashtags:</strong></div>
+              <div class="htags">${(script.hashtags || []).map(h => `<span class="htag">${h}</span>`).join('')}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    document.body.appendChild(modal);
+
+  } catch (error) {
+    toast('Failed to load script', 'err');
+  }
+}
+
+async function produceContentVideo(keyword) {
+  if (!confirm(`Produce video for "${keyword}"?`)) return;
+
+  try {
+    const response = await fetch(`${API}/api/v1/content-to-video/produce/${keyword}`, {
+      method: 'POST',
+    });
+
+    if (!response.ok) {
+      throw new Error('Production failed');
+    }
+
+    const result = await response.json();
+    toast(result.message || 'Video production started!', 'ok');
+    loadContentScripts();
+
+  } catch (error) {
+    toast(`Error: ${error.message}`, 'err');
+  }
+}
+
+$('post-overlay').addEventListener('click',e=>{if(e.target===$('post-overlay'))closePost();});
+
+// Init
+loadSavedSettings();
+checkAPI();refreshAll();
+setInterval(checkAPI,15000);
+setInterval(()=>{if($('t-dashboard').style.display!=='none')loadStats();},30000);
+
+// Load niches on page load for Settings tab
+loadNiches();
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+# ── Core Framework ──────────────────────────────
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+
+# ── Task Queue ───────────────────────────────────
+celery
+redis
+flower
+
+# ── Database ─────────────────────────────────────
+motor
+pymongo
+
+# ── Data Collection ──────────────────────────────
+pytrends
+newsapi-python
+youtube-transcript-api
+google-api-python-client
+httpx
+beautifulsoup4
+lxml
+
+# Social Media & Independent Sources
+praw              # Reddit API
+tweepy           # Twitter/X API (or use snscrape for no-auth)
+feedparser       # RSS/Atom feeds
+telethon         # Telegram client (optional)
+
+# Text Analysis (bias detection)
+textblob         # Sentiment analysis
+nltk            # Natural language processing
+
+# ── AI / LLM ─────────────────────────────────────
+openai
+tiktoken
+
+# ── Video Assembly ───────────────────────────────
+Pillow
+requests
+
+# ── Google OAuth (YouTube Upload) ─────────────────
+google-auth-httplib2
+google-auth-oauthlib
+
+# ── Utilities ────────────────────────────────────
+python-dotenv
+loguru
+tenacity
+aiofiles
+nest-asyncio

@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Viral Content Engine - AutoMedia AI</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--border:#2a2a38;--text:#e8e8f0;--muted:#6b6b80;--accent:#7c6af7;--success:#5dcaa5;--warn:#ef9f27;--danger:#e24b4a;--card:#13131c}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:20px 0;display:flex;flex-direction:column}
+.logo{padding:0 18px 22px;font-size:16px;font-weight:700;letter-spacing:-0.3px;color:var(--accent)}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;color:var(--muted);font-size:13px;border-left:2px solid transparent;transition:all .15s}
+.nav:hover{color:var(--text);background:var(--bg3)}
+.nav.on{color:var(--accent);border-left-color:var(--accent);background:rgba(124,106,247,.07)}
+.nav svg{opacity:.7}
+.sfooter{margin-top:auto;padding:14px 18px;font-size:11px;color:var(--muted)}
+.main{overflow:auto}
+.ph{padding:20px 26px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.ptitle{font-size:18px;font-weight:600;letter-spacing:-.3px}
+.ha{display:flex;gap:8px}
+.btn{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btp{background:var(--accent);border-color:var(--accent);color:#fff}
+.btp:hover{background:#6a58e0;border-color:#6a58e0;color:#fff}
+.btg{background:#3b6d11;border-color:#3b6d11;color:#fff}
+.btg:hover{background:#2d5409;color:#fff}
+.btw{background:var(--warn);border-color:var(--warn);color:#fff}
+.content{padding:22px 26px}
+
+/* Stats Row */
+.srow{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.slbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.sval{font-size:24px;font-weight:600;letter-spacing:-.5px}
+.ssub{font-size:10px;color:var(--muted);margin-top:2px}
+.cp{color:#9c8ff9}.cb{color:#378add}.ca{color:#ef9f27}.cg{color:#5dcaa5}.cr{color:#e24b4a}.cw{color:#ef9f27}
+
+/* Cards */
+.pcard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:16px}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.stitle{font-size:13px;font-weight:500}
+
+/* Niche Grid */
+.niche-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.niche-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:all .2s}
+.niche-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.niche-card.sel{border-color:var(--accent);background:rgba(124,106,247,.08)}
+.niche-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.niche-icon{width:40px;height:40px;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:20px}
+.niche-info{flex:1}
+.niche-name{font-size:14px;font-weight:600;margin-bottom:2px}
+.niche-desc{font-size:11px;color:var(--muted);line-height:1.3}
+.niche-stats{display:flex;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.niche-stat{font-size:10px;color:var(--muted)}
+.niche-stat b{color:var(--text);font-weight:600}
+
+/* Topic Cards */
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.topic-card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:all .2s}
+.topic-card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.topic-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px}
+.topic-score{width:50px;height:50px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+.score-high{background:rgba(93,202,165,.15);color:#5dcaa5;border:1px solid rgba(93,202,165,.3)}
+.score-med{background:rgba(239,159,39,.15);color:#ef9f27;border:1px solid rgba(239,159,39,.3)}
+.score-low{background:rgba(226,75,74,.15);color:#e24b4a;border:1px solid rgba(226,75,74,.3)}
+.topic-title{flex:1;font-size:13px;font-weight:500;line-height:1.4}
+.topic-body{padding:14px 16px}
+.topic-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:500}
+.bv{background:rgba(93,202,165,.12);color:#5dcaa5}.bs{background:rgba(124,106,247,.12);color:#9c8ff9}.ba{background:rgba(239,159,39,.12);color:#efb847}
+.topic-triggers{font-size:10px;color:var(--muted);margin-bottom:10px}
+.topic-actions{display:flex;gap:6px}
+.topic-actions .btn{flex:1;padding:5px 10px;font-size:11px}
+
+/* Script Preview */
+.script-container{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.script-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.script-segments{padding:18px}
+.segment{margin-bottom:14px;padding:12px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--border)}
+.segment.hook{border-left-color:#7c6af7}
+.segment.context{border-left-color:#5dcaa5}
+.segment.content{border-left-color:#378add}
+.segment.cta{border-left-color:#e24b4a}
+.seg-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px;font-weight:600}
+.seg-text{font-size:12px;line-height:1.7}
+.seg-meta{display:flex;gap:12px;margin-top:8px;font-size:10px;color:var(--muted)}
+
+/* Form Elements */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
+.field input,.field select,.field textarea{width:100%;padding:8px 11px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;font-family:inherit;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:80px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* Progress Bar */
+.progress{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin:8px 0}
+.progress-bar{height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
+
+/* Table */
+.tw{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 14px;text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:var(--bg2)}
+td{padding:10px 14px;border-bottom:1px solid rgba(42,42,56,.3);vertical-align:middle;font-size:12px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(124,106,247,.02)}
+
+/* Tabs */
+.tabs{display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0}
+.tab{padding:8px 16px;font-size:12px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.tab:hover{color:var(--text)}
+.tab.sel{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* Queue Status */
+.queue-status{display:flex;gap:16px;margin-bottom:16px}
+.queue-stat{text-align:center}
+.queue-stat-value{font-size:20px;font-weight:600}
+.queue-stat-label{font-size:10px;color:var(--muted);text-transform:uppercase}
+
+/* Toast */
+.toast{position:fixed;top:14px;right:14px;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:9px 14px;font-size:12px;z-index:300;opacity:0;transform:translateY(-6px);transition:all .2s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{border-color:rgba(93,202,165,.4);color:#5dcaa5}
+.toast.err{border-color:rgba(226,75,74,.4);color:#e24b4a}
+
+/* Loading */
+.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(124,106,247,.3);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Modal */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;overflow-y:auto;padding:30px}
+.overlay.open{display:block}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px;width:100%;max-width:700px;margin:0 auto;max-height:90vh;overflow-y:auto}
+.modal-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.modal-title{font-size:15px;font-weight:600}
+.modal-close{cursor:pointer;color:var(--muted);font-size:22px;line-height:1}
+.modal-body{padding:22px}
+.modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+
+/* Score Gauge */
+.score-gauge{width:80px;height:80px;position:relative;margin:0 auto}
+.score-ring{transform:rotate(-90deg)}
+.score-fill{fill:none;stroke:var(--accent);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .5s}
+.score-bg{fill:none;stroke:var(--bg3);stroke-width:8}
+.score-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;font-weight:700}
+
+/* Empty State */
+.empty{text-align:center;padding:40px;color:var(--muted)}
+.empty-icon{font-size:48px;margin-bottom:12px;opacity:.3}
+
+/* Responsive */
+@media(max-width:900px){.shell{grid-template-columns:1fr}.srow{grid-template-columns:repeat(2,1fr)}.field-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="logo">🚀 Viral Engine</div>
+  <div class="nav on" onclick="showTab('niches',this)">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+    Niches
+  </div>
+  <div class="nav" onclick="showTab('topics',this)">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+    Discover Topics
+  </div>
+  <div class="nav" onclick="showTab('scripts',this)">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="10" height="10" rx="2"/><path d="M7 7h2M7 10h2"/></svg>
+    Script Generator
+  </div>
+  <div class="nav" onclick="showTab('metadata',this)">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4v8M4 8h8"/></svg>
+    Metadata Optimizer
+  </div>
+  <div class="nav" onclick="showTab('upload',this)">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l5 5h-3v6h-4V6H3L8 1z"/></svg>
+    Upload Queue
+  </div>
+  <div class="nav" onclick="showTab('analytics',this)">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v10h10M7 13l3-3 2 2 3-3"/></svg>
+    Analytics
+  </div>
+  <div class="sfooter">
+    <div style="display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#5dcaa5"></span>System Ready</div>
+    <div style="margin-top:4px;font-size:10px">Multi-Niche Engine v2.0</div>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- NICHES TAB -->
+<div id="t-niches">
+  <div class="ph">
+    <div class="ptitle">Select Niche</div>
+    <div class="ha">
+      <button class="btn" onclick="loadNiches()">Refresh</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="pcard" style="margin-bottom:20px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Selected Niche</div>
+      <div style="font-size:16px;font-weight:600;color:var(--accent)" id="selected-niche">None</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px" id="selected-niche-desc">Select a niche to begin</div>
+    </div>
+    <div class="niche-grid" id="niche-grid">
+      <div class="empty"><div class="empty-icon">📂</div>Loading niches...</div>
+    </div>
+  </div>
+</div>
+
+<!-- TOPICS TAB -->
+<div id="t-topics" style="display:none">
+  <div class="ph">
+    <div class="ptitle">Discover Viral Topics</div>
+    <div class="ha">
+      <button class="btn btp" onclick="discoverTopics()">🔍 Discover Topics</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="pcard" style="margin-bottom:20px">
+      <div class="field-row">
+        <div class="field">
+          <label>Niche</label>
+          <select id="topic-niche" onchange="updateSelectedNiche()">
+            <option value="">Select niche first</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Min Virality Score</label>
+          <input type="number" id="min-virality" value="70" min="0" max="100">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Max Topics</label>
+          <input type="number" id="max-topics" value="10" min="1" max="50">
+        </div>
+        <div class="field">
+          <label>Region</label>
+          <select id="topic-region">
+            <option value="US">United States</option>
+            <option value="GB">United Kingdom</option>
+            <option value="PK">Pakistan</option>
+            <option value="IN">India</option>
+            <option value="CA">Canada</option>
+            <option value="AU">Australia</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div id="topics-loading" class="empty" style="display:none">
+      <div class="empty-icon"><span class="spin" style="width:32px;height:32px"></span></div>
+      <div>Discovering viral topics...</div>
+    </div>
+    <div class="topic-grid" id="topic-grid">
+      <div class="empty"><div class="empty-icon">🎯</div>Click "Discover Topics" to find viral content ideas</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPTS TAB -->
+<div id="t-scripts" style="display:none">
+  <div class="ph">
+    <div class="ptitle">Viral Script Generator</div>
+    <div class="ha">
+      <button class="btn btp" onclick="generateScript()">✨ Generate Script</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="pcard" style="margin-bottom:20px">
+      <div class="field">
+        <label>Topic</label>
+        <input type="text" id="script-topic" placeholder="Enter topic or select from discovered topics">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Niche</label>
+          <select id="script-niche">
+            <option value="motivation">Motivation</option>
+            <option value="finance">Finance</option>
+            <option value="ai_tech">AI & Tech</option>
+            <option value="islamic">Islamic</option>
+            <option value="health_fitness">Health & Fitness</option>
+            <option value="history">History</option>
+            <option value="facts_did_you_know">Facts</option>
+            <option value="horror_stories">Horror</option>
+            <option value="relationships">Relationships</option>
+            <option value="business">Business</option>
+            <option value="trending_viral">Trending</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Target Duration (seconds)</label>
+          <input type="number" id="script-duration" value="90" min="30" max="300">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Hook Framework</label>
+          <select id="script-hook">
+            <option value="">Auto-select</option>
+            <option value="you_wont_believe">You Won't Believe</option>
+            <option value="this_is_why">This Is Why</option>
+            <option value="top_secrets">Top Secrets</option>
+            <option value="story_based">Story Based</option>
+            <option value="question_based">Question Based</option>
+            <option value="statistic_shock">Statistic Shock</option>
+            <option value="pattern_interrupt">Pattern Interrupt</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Creativity Factor</label>
+          <input type="range" id="script-creativity" min="0" max="100" value="70">
+          <div style="font-size:10px;color:var(--muted);margin-top:4px">Current: <span id="creativity-value">70</span>%</div>
+        </div>
+      </div>
+    </div>
+    <div id="script-loading" class="empty" style="display:none">
+      <div class="empty-icon"><span class="spin" style="width:32px;height:32px"></span></div>
+      <div>Generating viral script...</div>
+    </div>
+    <div id="script-result" style="display:none">
+      <div class="script-container">
+        <div class="script-header">
+          <div>
+            <div style="font-size:14px;font-weight:600;margin-bottom:4px" id="script-title">Script Title</div>
+            <div style="font-size:11px;color:var(--muted)">
+              <span id="script-duration-display">90s</span> · 
+              <span id="script-words">0</span> words · 
+              Retention: <span id="script-retention" style="color:#5dcaa5">0</span>%
+            </div>
+          </div>
+          <div class="ha">
+            <button class="btn" onclick="copyScript()">📋 Copy</button>
+            <button class="btn btp" onclick="optimizeMetadataFromScript()">Next: Optimize Metadata →</button>
+          </div>
+        </div>
+        <div class="script-segments" id="script-segments"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- METADATA TAB -->
+<div id="t-metadata" style="display:none">
+  <div class="ph">
+    <div class="ptitle">Metadata Optimizer</div>
+    <div class="ha">
+      <button class="btn btp" onclick="optimizeMetadata()">🎯 Optimize</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="pcard" style="margin-bottom:20px">
+      <div class="field">
+        <label>Topic</label>
+        <input type="text" id="meta-topic" placeholder="Enter topic">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Niche</label>
+          <select id="meta-niche">
+            <option value="motivation">Motivation</option>
+            <option value="finance">Finance</option>
+            <option value="ai_tech">AI & Tech</option>
+            <option value="islamic">Islamic</option>
+            <option value="health_fitness">Health & Fitness</option>
+            <option value="history">History</option>
+            <option value="facts_did_you_know">Facts</option>
+            <option value="horror_stories">Horror</option>
+            <option value="relationships">Relationships</option>
+            <option value="business">Business</option>
+            <option value="trending_viral">Trending</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Platform</label>
+          <select id="meta-platform">
+            <option value="youtube">YouTube</option>
+            <option value="youtube_shorts">YouTube Shorts</option>
+            <option value="instagram_reels">Instagram Reels</option>
+            <option value="tiktok">TikTok</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div id="meta-loading" class="empty" style="display:none">
+      <div class="empty-icon"><span class="spin" style="width:32px;height:32px"></span></div>
+      <div>Optimizing metadata...</div>
+    </div>
+    <div id="meta-result" style="display:none">
+      <div class="field">
+        <label>Best Title <span style="color:var(--muted)">(<span id="title-count">5</span> variants)</span></label>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:10px;margin-bottom:8px;font-size:13px;font-weight:500" id="best-title"></div>
+        <div id="title-variants" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <div class="desc-box" style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:10px;font-size:12px;line-height:1.6;max-height:200px;overflow-y:auto" id="meta-description"></div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Tags (<span id="tag-count">0</span>)</label>
+          <div style="display:flex;flex-wrap:wrap;gap:4px" id="meta-tags"></div>
+        </div>
+        <div class="field">
+          <label>Hashtags</label>
+          <div style="display:flex;flex-wrap:wrap;gap:4px" id="meta-hashtags"></div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="sc">
+          <div class="slbl">SEO Score</div>
+          <div class="sval cg" id="seo-score">—</div>
+        </div>
+        <div class="sc">
+          <div class="slbl">CTR Score</div>
+          <div class="sval cb" id="ctr-score">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- UPLOAD TAB -->
+<div id="t-upload" style="display:none">
+  <div class="ph">
+    <div class="ptitle">Upload Queue</div>
+    <div class="ha">
+      <button class="btn" onclick="loadUploadQueue()">Refresh</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="queue-status">
+      <div class="queue-stat">
+        <div class="queue-stat-value cp" id="queue-total">0</div>
+        <div class="queue-stat-label">Total</div>
+      </div>
+      <div class="queue-stat">
+        <div class="queue-stat-value cb" id="queue-pending">0</div>
+        <div class="queue-stat-label">Pending</div>
+      </div>
+      <div class="queue-stat">
+        <div class="queue-stat-value cg" id="queue-processing">0</div>
+        <div class="queue-stat-label">Processing</div>
+      </div>
+      <div class="queue-stat">
+        <div class="queue-stat-value cr" id="queue-failed">0</div>
+        <div class="queue-stat-label">Failed</div>
+      </div>
+    </div>
+    <div class="pcard">
+      <div class="sh">
+        <div class="stitle">Rate Limit Status</div>
+        <div class="badge bv" id="rate-limit-status">OK</div>
+      </div>
+      <div class="field-row">
+        <div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Daily Uploads</div>
+          <div class="progress"><div class="progress-bar" id="daily-progress" style="width:0%"></div></div>
+          <div style="font-size:10px;color:var(--muted)"><span id="daily-count">0</span> / <span id="daily-limit">10</span></div>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Hourly Uploads</div>
+          <div class="progress"><div class="progress-bar" id="hourly-progress" style="width:0%"></div></div>
+          <div style="font-size:10px;color:var(--muted)"><span id="hourly-count">0</span> / <span id="hourly-limit">3</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th>Topic</th><th>Title</th><th>Priority</th><th>Status</th><th>Scheduled</th><th>Action</th></tr>
+        </thead>
+        <tbody id="upload-queue">
+          <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:30px">No uploads in queue</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS TAB -->
+<div id="t-analytics" style="display:none">
+  <div class="ph">
+    <div class="ptitle">Analytics</div>
+    <div class="ha">
+      <button class="btn" onclick="loadAnalytics()">Refresh</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="srow">
+      <div class="sc"><div class="slbl">Topics Discovered</div><div class="sval cp" id="analytics-topics">—</div></div>
+      <div class="sc"><div class="slbl">Scripts Generated</div><div class="sval cb" id="analytics-scripts">—</div></div>
+      <div class="sc"><div class="slbl">Avg Virality</div><div class="sval ca" id="analytics-virality">—</div></div>
+      <div class="sc"><div class="slbl">Uploads Today</div><div class="sval cg" id="analytics-uploads">—</div></div>
+      <div class="sc"><div class="slbl">Success Rate</div><div class="sval cr" id="analytics-success">—</div></div>
+    </div>
+    <div class="pcard">
+      <div class="sh"><div class="stitle">Niche Performance</div></div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Niche</th><th>Topics</th><th>Scripts</th><th>Avg Score</th><th>Uploads</th></tr></thead>
+          <tbody id="niche-analytics">
+            <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">No data available</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- Topic Detail Modal -->
+<div class="overlay" id="topic-overlay" onclick="if(event.target===this)closeTopicModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="topic-modal-title">Topic Details</div>
+      <div class="modal-close" onclick="closeTopicModal()">×</div>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:16px;margin-bottom:20px">
+        <div class="score-gauge">
+          <svg class="score-ring" width="80" height="80">
+            <circle class="score-bg" cx="40" cy="40" r="32"></circle>
+            <circle class="score-fill" cx="40" cy="40" r="32" stroke-dasharray="201" stroke-dashoffset="60" id="topic-score-ring"></circle>
+          </svg>
+          <div class="score-text" id="topic-modal-score">0</div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px" id="topic-modal-topic"></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px" id="topic-modal-reason"></div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap" id="topic-modal-triggers"></div>
+        </div>
+      </div>
+      <div style="font-size:12px;font-weight:500;margin-bottom:10px">Virality Breakdown</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px" id="topic-modal-breakdown"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeTopicModal()">Close</button>
+      <button class="btn btp" onclick="useTopicForScript()">Use for Script</button>
+    </div>
+  </div>
+</div>
+
+<!-- Script Preview Modal -->
+<div class="overlay" id="script-overlay" onclick="if(event.target===this)closeScriptModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Script Preview</div>
+      <div class="modal-close" onclick="closeScriptModal()">×</div>
+    </div>
+    <div class="modal-body" id="script-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeScriptModal()">Close</button>
+      <button class="btn btp" onclick="generateScriptFromModal()">Generate Full Script</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// State
+let selectedNiche = null;
+let discoveredTopics = [];
+let currentScript = null;
+let currentMetadata = null;
+let selectedTopic = null;
+
+// Utility
+const $ = id => document.getElementById(id);
+
+function showTab(tabId, navEl) {
+  document.querySelectorAll('.main > div').forEach(d => d.style.display = 'none');
+  $('t-' + tabId).style.display = 'block';
+  document.querySelectorAll('.nav').forEach(n => n.classList.remove('on'));
+  if (navEl) navEl.classList.add('on');
+}
+
+function toast(msg, type = '') {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+async function apiRequest(endpoint, method = 'GET', body = null) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) {
+    opts.body = JSON.stringify(body);
+    console.log('API Request:', endpoint, method, body);
+  } else {
+    console.log('API Request (no body):', endpoint, method);
+  }
+  const res = await fetch(endpoint, opts);
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('API Error:', res.status, errorText);
+    throw new Error(errorText || res.statusText);
+  }
+  return res.json();
+}
+
+// Creativity slider
+$('script-creativity').addEventListener('input', e => {
+  $('creativity-value').textContent = e.target.value;
+});
+
+// Load Niches
+async function loadNiches() {
+  try {
+    const data = await apiRequest('/api/v2/viral/niches');
+    const niches = data.niches || [];
+    
+    $('niche-grid').innerHTML = niches.map(n => `
+      <div class="niche-card" onclick="selectNiche('${n.id}', '${n.name}', '${n.description}')">
+        <div class="niche-header">
+          <div class="niche-icon">${getNicheIcon(n.id)}</div>
+          <div class="niche-info">
+            <div class="niche-name">${n.name}</div>
+            <div class="niche-desc">${n.description || 'Content niche'}</div>
+          </div>
+        </div>
+        <div class="niche-stats">
+          <div class="niche-stat">Virality: <b>${n.virality_threshold || 60}+</b></div>
+          <div class="niche-stat">Daily: <b>${n.daily_limit || 5}</b></div>
+        </div>
+      </div>
+    `).join('');
+    
+    // Populate selects
+    const nicheOptions = niches.map(n => `<option value="${n.id}">${n.name}</option>`).join('');
+    $('topic-niche').innerHTML = '<option value="">Select niche</option>' + nicheOptions;
+    $('script-niche').innerHTML = nicheOptions;
+    $('meta-niche').innerHTML = nicheOptions;
+    
+    toast('Niches loaded');
+  } catch (e) {
+    $('niche-grid').innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div>Failed to load niches: ${e.message}</div>`;
+    toast('Failed to load niches', 'err');
+  }
+}
+
+function getNicheIcon(niche) {
+  const icons = {
+    motivation: '💪', finance: '💰', ai_tech: '🤖', islamic: '☪️',
+    health_fitness: '💪', history: '📜', facts_did_you_know: '💡',
+    horror_stories: '👻', relationships: '💕', business: '💼',
+    trending_viral: '🔥', current_affairs: '📰'
+  };
+  return icons[niche] || '📁';
+}
+
+function selectNiche(id, name, desc) {
+  selectedNiche = id;
+  $('selected-niche').textContent = name;
+  $('selected-niche-desc').textContent = desc;
+  
+  document.querySelectorAll('.niche-card').forEach(c => c.classList.remove('sel'));
+  event.currentTarget.classList.add('sel');
+  
+  // Update selects
+  $('topic-niche').value = id;
+  $('script-niche').value = id;
+  $('meta-niche').value = id;
+  
+  toast(`Selected: ${name}`);
+}
+
+function updateSelectedNiche() {
+  const niche = $('topic-niche').value;
+  if (niche) selectNicheById(niche);
+}
+
+function selectNicheById(id) {
+  selectedNiche = id;
+  $('selected-niche').textContent = id;
+  document.querySelectorAll('.niche-card').forEach(c => {
+    c.classList.toggle('sel', c.querySelector('.niche-name')?.textContent.toLowerCase().includes(id));
+  });
+}
+
+// Discover Topics
+async function discoverTopics() {
+  const nicheEl = $('topic-niche');
+  const niche = nicheEl?.value || 'current_affairs';
+  
+  if (!niche) {
+    toast('Please select a niche first', 'err');
+    showTab('niches', document.querySelectorAll('.nav')[0]);
+    return;
+  }
+
+  $('topics-loading').style.display = 'block';
+  $('topic-grid').innerHTML = '';
+
+  try {
+    const requestBody = {
+      niche: niche,
+      region: $('topic-region')?.value || 'US',
+      language: 'en',
+      max_topics: parseInt($('max-topics')?.value || '10'),
+      min_virality_score: parseInt($('min-virality')?.value || '60'),
+      exclude_keywords: []
+    };
+    
+    console.log('Discovering topics with:', requestBody);
+
+    const data = await apiRequest('/api/v2/viral/topics/discover', 'POST', requestBody);
+
+    discoveredTopics = data.topics || [];
+    $('topics-loading').style.display = 'none';
+    
+    if (!discoveredTopics.length) {
+      $('topic-grid').innerHTML = '<div class="empty"><div class="empty-icon">📭</div>No topics found</div>';
+      return;
+    }
+    
+    $('topic-grid').innerHTML = discoveredTopics.map((t, i) => `
+      <div class="topic-card">
+        <div class="topic-header">
+          <div class="topic-score ${getScoreClass(t.virality_score)}">
+            <div style="font-size:16px">${Math.round(t.virality_score)}</div>
+            <div style="font-size:8px">VIRALITY</div>
+          </div>
+          <div class="topic-title">${t.topic}</div>
+        </div>
+        <div class="topic-body">
+          <div class="topic-meta">
+            <span class="badge bv">${t.emotional_triggers?.[0] || 'neutral'}</span>
+            <span class="badge bs">${t.ctr_patterns?.[0] || 'standard'}</span>
+            <span class="badge ba">${t.is_validated ? '✓ Validated' : 'Pending'}</span>
+          </div>
+          <div class="topic-triggers">${t.virality_score?.reason || 'Good viral potential'}</div>
+          <div class="topic-actions">
+            <button class="btn" onclick="viewTopicDetails(${i})">View</button>
+            <button class="btn btp" onclick="useTopic(${i})">Use This</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+    
+    toast(`Found ${discoveredTopics.length} topics`);
+  } catch (e) {
+    $('topics-loading').style.display = 'none';
+    $('topic-grid').innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div>Failed: ${e.message}</div>`;
+    toast('Failed to discover topics', 'err');
+  }
+}
+
+function getScoreClass(score) {
+  if (score >= 80) return 'score-high';
+  if (score >= 60) return 'score-med';
+  return 'score-low';
+}
+
+function viewTopicDetails(index) {
+  const t = discoveredTopics[index];
+  selectedTopic = t;
+  
+  $('topic-modal-title').textContent = 'Topic Details';
+  $('topic-modal-topic').textContent = t.topic;
+  $('topic-modal-score').textContent = Math.round(t.virality_score?.overall || 0);
+  $('topic-modal-reason').textContent = t.virality_score?.reason || '';
+  
+  // Score ring
+  const score = t.virality_score?.overall || 0;
+  const offset = 201 - (201 * score / 100);
+  $('topic-score-ring').style.strokeDashoffset = offset;
+  
+  // Triggers
+  $('topic-modal-triggers').innerHTML = (t.emotional_triggers || []).map(e => 
+    `<span class="badge bv">${e}</span>`
+  ).join('');
+  
+  // Breakdown
+  const b = t.virality_score || {};
+  $('topic-modal-breakdown').innerHTML = `
+    <div style="padding:10px;background:var(--bg3);border-radius:7px">
+      <div style="font-size:10px;color:var(--muted)">Trend</div>
+      <div style="font-size:16px;font-weight:600">${Math.round(b.trend_score || 0)}</div>
+    </div>
+    <div style="padding:10px;background:var(--bg3);border-radius:7px">
+      <div style="font-size:10px;color:var(--muted)">Emotional</div>
+      <div style="font-size:16px;font-weight:600">${Math.round(b.emotional_score || 0)}</div>
+    </div>
+    <div style="padding:10px;background:var(--bg3);border-radius:7px">
+      <div style="font-size:10px;color:var(--muted)">CTR</div>
+      <div style="font-size:16px;font-weight:600">${Math.round(b.ctr_potential || 0)}</div>
+    </div>
+    <div style="padding:10px;background:var(--bg3);border-radius:7px">
+      <div style="font-size:10px;color:var(--muted)">Engagement</div>
+      <div style="font-size:16px;font-weight:600">${Math.round(b.engagement_potential || 0)}</div>
+    </div>
+  `;
+  
+  $('topic-overlay').classList.add('open');
+}
+
+function closeTopicModal() {
+  $('topic-overlay').classList.remove('open');
+}
+
+function useTopic(index) {
+  const t = discoveredTopics[index];
+  $('script-topic').value = t.topic;
+  $('script-niche').value = t.niche;
+  showTab('scripts', document.querySelectorAll('.nav')[2]);
+  toast(`Selected: ${t.topic}`);
+}
+
+function useTopicForScript() {
+  if (selectedTopic) {
+    $('script-topic').value = selectedTopic.topic;
+    $('script-niche').value = selectedTopic.niche;
+    closeTopicModal();
+    showTab('scripts', document.querySelectorAll('.nav')[2]);
+    toast('Topic applied to script generator');
+  }
+}
+
+// Generate Script
+async function generateScript() {
+  const topic = $('script-topic').value;
+  const niche = $('script-niche').value;
+  
+  if (!topic) {
+    toast('Enter a topic', 'err');
+    return;
+  }
+  
+  $('script-loading').style.display = 'block';
+  $('script-result').style.display = 'none';
+  
+  try {
+    const data = await apiRequest('/api/v2/viral/scripts/generate', 'POST', {
+      niche: niche,
+      topic: topic,
+      target_duration_sec: parseInt($('script-duration').value),
+      creativity_factor: parseInt($('script-creativity').value) / 100,
+      hook_framework: $('script-hook').value || undefined
+    });
+    
+    currentScript = data.script;
+    $('script-loading').style.display = 'none';
+    $('script-result').style.display = 'block';
+    
+    $('script-title').textContent = currentScript.title;
+    $('script-duration-display').textContent = Math.round(currentScript.estimated_duration_sec) + 's';
+    $('script-words').textContent = currentScript.word_count;
+    $('script-retention').textContent = Math.round(currentScript.retention_score);
+    
+    // Render segments
+    $('script-segments').innerHTML = (currentScript.segments || []).map(s => `
+      <div class="segment ${s.type}">
+        <div class="seg-label">${s.type} · ${Math.round(s.duration_estimate_sec)}s ${s.has_pattern_interrupt ? '· ⚡ Pattern Interrupt' : ''}</div>
+        <div class="seg-text">${s.text}</div>
+        ${s.visual_cue ? `<div class="seg-meta">🎬 ${s.visual_cue}</div>` : ''}
+      </div>
+    `).join('');
+    
+    toast('Script generated!');
+  } catch (e) {
+    $('script-loading').style.display = 'none';
+    toast('Failed to generate script: ' + e.message, 'err');
+  }
+}
+
+function copyScript() {
+  if (!currentScript) return;
+  const text = currentScript.full_text;
+  navigator.clipboard.writeText(text);
+  toast('Script copied!');
+}
+
+async function optimizeMetadataFromScript() {
+  if (!currentScript) return;
+  $('meta-topic').value = currentScript.topic;
+  $('meta-niche').value = currentScript.niche;
+  showTab('metadata', document.querySelectorAll('.nav')[3]);
+  toast('Ready to optimize metadata');
+}
+
+// Optimize Metadata
+async function optimizeMetadata() {
+  const topic = $('meta-topic').value;
+  const niche = $('meta-niche').value;
+  
+  if (!topic) {
+    toast('Enter a topic', 'err');
+    return;
+  }
+  
+  $('meta-loading').style.display = 'block';
+  $('meta-result').style.display = 'none';
+  
+  try {
+    const data = await apiRequest('/api/v2/viral/metadata/optimize', 'POST', {
+      niche: niche,
+      topic: topic,
+      platform: $('meta-platform').value
+    });
+    
+    currentMetadata = data.metadata;
+    $('meta-loading').style.display = 'none';
+    $('meta-result').style.display = 'block';
+    
+    $('best-title').textContent = currentMetadata.best_title;
+    $('title-count').textContent = currentMetadata.title_variants?.length || 0;
+    $('title-variants').innerHTML = (currentMetadata.title_variants || []).map((t, i) => `
+      <div style="padding:8px 10px;background:var(--bg3);border-radius:6px;font-size:12px;display:flex;align-items:center;gap:8px">
+        <span style="width:20px;height:20px;background:var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px">${i+1}</span>
+        <span style="flex:1">${t.text}</span>
+        <span class="badge ${t.ctr_score >= 80 ? 'bv' : 'ba'}">${Math.round(t.ctr_score)} CTR</span>
+      </div>
+    `).join('');
+    
+    $('meta-description').textContent = currentMetadata.description;
+    $('tag-count').textContent = currentMetadata.tags?.length || 0;
+    $('meta-tags').innerHTML = (currentMetadata.tags || []).slice(0, 15).map(t => 
+      `<span class="badge bs">${t}</span>`
+    ).join('');
+    
+    $('meta-hashtags').innerHTML = (currentMetadata.hashtags || []).map(h => 
+      `<span class="badge bv">${h}</span>`
+    ).join('');
+    
+    $('seo-score').textContent = Math.round(currentMetadata.seo_score);
+    $('ctr-score').textContent = Math.round(currentMetadata.ctr_score);
+    
+    toast('Metadata optimized!');
+  } catch (e) {
+    $('meta-loading').style.display = 'none';
+    toast('Failed to optimize: ' + e.message, 'err');
+  }
+}
+
+// Load Upload Queue
+async function loadUploadQueue() {
+  try {
+    const [queueData, rateData] = await Promise.all([
+      apiRequest('/api/v2/viral/upload/queue/status'),
+      apiRequest('/api/v2/viral/upload/rate-limit')
+    ]);
+    
+    const status = queueData.queue_status || {};
+    $('queue-total').textContent = status.total_jobs || 0;
+    $('queue-pending').textContent = status.pending_jobs || 0;
+    $('queue-processing').textContent = status.processing_jobs || 0;
+    $('queue-failed').textContent = status.failed_jobs || 0;
+    
+    const rate = rateData.rate_limit || {};
+    $('rate-limit-status').textContent = rate.can_upload ? 'OK' : 'LIMITED';
+    $('rate-limit-status').className = 'badge ' + (rate.can_upload ? 'bv' : 'ba');
+    
+    $('daily-count').textContent = rate.daily_uploads || 0;
+    $('daily-limit').textContent = rate.daily_limit || 10;
+    $('daily-progress').style.width = ((rate.daily_uploads || 0) / (rate.daily_limit || 10) * 100) + '%';
+    
+    $('hourly-count').textContent = rate.hourly_uploads || 0;
+    $('hourly-limit').textContent = rate.hourly_limit || 3;
+    $('hourly-progress').style.width = ((rate.hourly_uploads || 0) / (rate.hourly_limit || 3) * 100) + '%';
+    
+    $('upload-queue').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:30px">Queue loaded</td></tr>';
+  } catch (e) {
+    toast('Failed to load queue', 'err');
+  }
+}
+
+// Load Analytics
+async function loadAnalytics() {
+  $('analytics-topics').textContent = '—';
+  $('analytics-scripts').textContent = '—';
+  $('analytics-virality').textContent = '—';
+  $('analytics-uploads').textContent = '—';
+  $('analytics-success').textContent = '—';
+}
+
+// Close modals
+function closeScriptModal() {
+  $('script-overlay').classList.remove('open');
+}
+
+function generateScriptFromModal() {
+  closeScriptModal();
+  generateScript();
+}
+
+// Initialize
+loadNiches();
+loadUploadQueue();
+</script>
+</body>
+</html>
